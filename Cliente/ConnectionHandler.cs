@@ -30,6 +30,7 @@ namespace Cliente
             protocolSI = new ProtocolSI();
 
             msgs.Add("Conectado ao servidor");
+            ReceiveData();
         }
 
         public void Send(string message)
@@ -47,6 +48,42 @@ namespace Cliente
             while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
             {
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+            }
+
+            msgs.Add("ACK");
+        }
+
+        public void ReceiveData()
+        {
+            new Thread(ReceiveDataThread).Start();
+        }
+
+        private void ReceiveDataThread()
+        {
+            while (true)
+            {
+                string textAux = "";
+
+                // Envia uma mensagem do tipo USER_OPTION_1
+                byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
+                networkStream.Write(opt1, 0, opt1.Length);
+
+                while (true)
+                {
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.EOF)
+                    {
+                        break;
+                    }
+                    else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
+                    {
+                        textAux = textAux + protocolSI.GetStringFromData();
+                    }
+                }
+
+                msgs.Add("Final: " + textAux);
+                Thread.Sleep(1000);
             }
         }
 

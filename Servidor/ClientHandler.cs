@@ -11,6 +11,9 @@ namespace Servidor
 {
     class ClientHandler
     {
+        // Tamanho maximo da resposta
+        private const int CHUNKSIZE = 4;
+
         private TcpClient client;
         private int clientId;
 
@@ -58,6 +61,38 @@ namespace Servidor
                         // Envia o ACK para o cliente
                         ack = protocolSI.Make(ProtocolSICmdType.ACK);
                         networkStream.Write(ack, 0, ack.Length);
+                        break;
+                    case ProtocolSICmdType.USER_OPTION_1:
+                        string response = "abc1234567890";
+
+                        // Variavel auxiliar
+                        string stringChunk = "";
+
+                        // Tamanho da resposta
+                        int stringLenght = response.Length;
+
+                        for (int i = 0; i < response.Length; i = i + CHUNKSIZE)
+                        {
+                            if (CHUNKSIZE > stringLenght)
+                            {
+                                stringChunk = response.Substring(i);
+                            }
+                            else
+                            {
+                                stringLenght = stringLenght - CHUNKSIZE;
+
+                                stringChunk = response.Substring(i, CHUNKSIZE);
+                            }
+
+                            // Envia a mensagem
+                            byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, stringChunk);
+                            networkStream.Write(packet, 0, packet.Length);
+                        }
+
+                        // Envia EOF
+                        byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
+                        networkStream.Write(eof, 0, eof.Length);
+
                         break;
                     default:
                         break;
