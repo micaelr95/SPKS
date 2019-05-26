@@ -17,6 +17,8 @@ namespace Cliente
         ProtocolSI protocolSI;
         TcpClient tcpClient;
 
+        public List<string> msgs = new List<string>();
+
         public void ConnectToServer(string ip)
         {
             tcpClient = new TcpClient();
@@ -26,6 +28,8 @@ namespace Cliente
             networkStream = tcpClient.GetStream();
 
             protocolSI = new ProtocolSI();
+
+            msgs.Add("Conectado ao servidor");
         }
 
         public void Send(string message)
