@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.listBoxMensagens = new System.Windows.Forms.ListBox();
             this.textBoxMensagem = new System.Windows.Forms.TextBox();
             this.buttonEnviar = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.buttonLigar = new System.Windows.Forms.Button();
             this.textBoxIP = new System.Windows.Forms.TextBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,6 +93,10 @@
             this.textBoxIP.TabIndex = 0;
             this.textBoxIP.Text = "localhost";
             // 
+            // timer1
+            // 
+            this.timer1.Interval = 1000;
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -118,6 +124,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button buttonLigar;
         private System.Windows.Forms.TextBox textBoxIP;
+        public System.Windows.Forms.Timer timer1;
     }
 }
 

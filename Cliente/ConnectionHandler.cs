@@ -13,9 +13,9 @@ namespace Cliente
     {
         private const int PORT = 5050;
 
-        NetworkStream networkStream;
-        ProtocolSI protocolSI;
-        TcpClient tcpClient;
+        static NetworkStream networkStream;
+        static ProtocolSI protocolSI;
+        static TcpClient tcpClient;
 
         public List<string> msgs = new List<string>();
 
@@ -30,7 +30,6 @@ namespace Cliente
             protocolSI = new ProtocolSI();
 
             msgs.Add("Conectado ao servidor");
-            ReceiveData();
         }
 
         public void Send(string message)
@@ -50,41 +49,39 @@ namespace Cliente
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
             }
 
+            ReceiveDataThread();
+
             msgs.Add("ACK");
         }
 
-        public void ReceiveData()
+        public void ReceiveData(Object myObject, EventArgs myEventArgs)
         {
             new Thread(ReceiveDataThread).Start();
         }
 
         private void ReceiveDataThread()
         {
+            string textAux = "";
+
+            // Envia uma mensagem do tipo USER_OPTION_1
+            byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
+            networkStream.Write(opt1, 0, opt1.Length);
+
             while (true)
             {
-                string textAux = "";
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
-                // Envia uma mensagem do tipo USER_OPTION_1
-                byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
-                networkStream.Write(opt1, 0, opt1.Length);
-
-                while (true)
+                if (protocolSI.GetCmdType() == ProtocolSICmdType.EOF)
                 {
-                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-
-                    if (protocolSI.GetCmdType() == ProtocolSICmdType.EOF)
-                    {
-                        break;
-                    }
-                    else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
-                    {
-                        textAux = textAux + protocolSI.GetStringFromData();
-                    }
+                    break;
                 }
-
-                msgs.Add("Final: " + textAux);
-                Thread.Sleep(1000);
+                else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
+                {
+                    textAux = textAux + protocolSI.GetStringFromData();
+                }
             }
+
+            msgs.Add("Final: " + textAux);
         }
 
         public void CloseConnection()

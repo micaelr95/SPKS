@@ -51,6 +51,8 @@ namespace Cliente
                 {
                     listBoxMensagens.DataSource = null;
                     listBoxMensagens.DataSource = connectionHandler.msgs;
+                    timer1.Tick += new EventHandler(connectionHandler.ReceiveData);
+                    timer1.Start();
                 });
                 Thread.Sleep(100);
             }
