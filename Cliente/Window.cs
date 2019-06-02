@@ -25,7 +25,7 @@ namespace Cliente
         {
             connectionHandler = new ConnectionHandler();
 
-            connectionHandler.ConnectToServer(textBoxIP.Text);
+            connectionHandler.ConnectToServer(textBoxIP.Text, timer1);
 
             uiThread = new Thread(UIThread);
             uiThread.Start();
@@ -54,7 +54,7 @@ namespace Cliente
                     timer1.Tick += new EventHandler(connectionHandler.ReceiveData);
                     timer1.Start();
                 });
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
             }
         }
     }

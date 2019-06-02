@@ -124,7 +124,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button buttonLigar;
         private System.Windows.Forms.TextBox textBoxIP;
-        public System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

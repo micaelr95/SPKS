@@ -18,8 +18,9 @@ namespace Cliente
         static TcpClient tcpClient;
 
         public List<string> msgs = new List<string>();
+        System.Windows.Forms.Timer timer;
 
-        public void ConnectToServer(string ip)
+        public void ConnectToServer(string ip, System.Windows.Forms.Timer t)
         {
             tcpClient = new TcpClient();
 
@@ -28,6 +29,8 @@ namespace Cliente
             networkStream = tcpClient.GetStream();
 
             protocolSI = new ProtocolSI();
+
+            timer = t;
 
             msgs.Add("Conectado ao servidor");
         }
@@ -50,8 +53,6 @@ namespace Cliente
             }
 
             ReceiveDataThread();
-
-            msgs.Add("ACK");
         }
 
         public void ReceiveData(Object myObject, EventArgs myEventArgs)
@@ -61,6 +62,7 @@ namespace Cliente
 
         private void ReceiveDataThread()
         {
+            timer.Stop();
             string textAux = "";
 
             // Envia uma mensagem do tipo USER_OPTION_1
@@ -69,19 +71,27 @@ namespace Cliente
 
             while (true)
             {
-                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                try
+                {
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.EOF)
+                    {
+                        break;
+                    }
+                    else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
+                    {
+                        textAux = textAux + protocolSI.GetStringFromData();
+                    }
+                }
+                catch (Exception)
+                {
+                    return;
+                }
 
-                if (protocolSI.GetCmdType() == ProtocolSICmdType.EOF)
-                {
-                    break;
-                }
-                else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
-                {
-                    textAux = textAux + protocolSI.GetStringFromData();
-                }
             }
+            msgs.Add(textAux);
 
-            msgs.Add("Final: " + textAux);
+            timer.Start();
         }
 
         public void CloseConnection()

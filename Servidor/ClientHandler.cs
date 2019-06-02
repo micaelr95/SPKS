@@ -48,7 +48,11 @@ namespace Servidor
                 {
                     // Se for uma mensagem
                     case ProtocolSICmdType.DATA:
-                        Console.WriteLine("    (Cliente {0}): {1}", clientId, protocolSI.GetStringFromData());
+                        string msg = clientId + ": " + protocolSI.GetStringFromData();
+                        Console.WriteLine("    Cliente " + msg);
+
+                        // Guarda os dados no ficheiro
+                        FileHandler.SaveData(msg);
 
                         // Envia o ACK para o cliente
                         ack = protocolSI.Make(ProtocolSICmdType.ACK);
@@ -63,35 +67,36 @@ namespace Servidor
                         networkStream.Write(ack, 0, ack.Length);
                         break;
                     case ProtocolSICmdType.USER_OPTION_1:
-                        string response = "abc1234567890";
+                        List<string> log = FileHandler.LoadData();
 
-                        // Variavel auxiliar
-                        string stringChunk = "";
-
-                        // Tamanho da resposta
-                        int stringLenght = response.Length;
-
-                        for (int i = 0; i < response.Length; i = i + CHUNKSIZE)
+                        foreach (string message in log)
                         {
-                            if (CHUNKSIZE > stringLenght)
-                            {
-                                stringChunk = response.Substring(i);
-                            }
-                            else
-                            {
-                                stringLenght = stringLenght - CHUNKSIZE;
+                            // Variavel auxiliar
+                            string stringChunk = "";
 
-                                stringChunk = response.Substring(i, CHUNKSIZE);
-                            }
+                            // Tamanho da resposta
+                            int stringLenght = message.Length;
 
-                            // Envia a mensagem
-                            byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, stringChunk);
-                            networkStream.Write(packet, 0, packet.Length);
+                            for (int i = 0; i < message.Length; i = i + CHUNKSIZE)
+                            {
+                                if (CHUNKSIZE > stringLenght)
+                                {
+                                    stringChunk = message.Substring(i);
+                                }
+                                else
+                                {
+                                    stringLenght = stringLenght - CHUNKSIZE;
+                                    stringChunk = message.Substring(i, CHUNKSIZE);
+                                }
+
+                                // Envia a mensagem
+                                byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, stringChunk);
+                                networkStream.Write(packet, 0, packet.Length);
+                            }
+                            // Envia EOF
+                            byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
+                            networkStream.Write(eof, 0, eof.Length);
                         }
-
-                        // Envia EOF
-                        byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
-                        networkStream.Write(eof, 0, eof.Length);
 
                         break;
                     default:
