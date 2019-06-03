@@ -22,23 +22,6 @@ namespace Cliente
             InitializeComponent();
         }
 
-        private void buttonLigar_Click(object sender, EventArgs e)
-        {
-            connectionHandler = new ConnectionHandler();
-
-            connectionHandler.ConnectToServer(textBoxIP.Text);
-
-            uiThread = new Thread(UIThread);
-            uiThread.Start();
-            timer1.Enabled = true;
-        }
-
-        private void buttonEnviar_Click(object sender, EventArgs e)
-        {
-            connectionHandler.Send(textBoxMensagem.Text);
-            textBoxMensagem.Text = "";
-        }
-
         private void Window_FormClosing(object sender, FormClosingEventArgs e)
         {
             uiThread.Abort();
@@ -51,8 +34,8 @@ namespace Cliente
             {
                 this.Invoke((MethodInvoker)delegate ()
                 {
-                    listBoxMensagens.DataSource = null;
-                    listBoxMensagens.DataSource = ConnectionHandler.msgs;
+                    listBoxChat.DataSource = null;
+                    listBoxChat.DataSource = ConnectionHandler.msgs;
                 });
                 Thread.Sleep(1000);
             }
@@ -68,9 +51,21 @@ namespace Cliente
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonEntrar_Click(object sender, EventArgs e)
         {
-            //connectionHandler.ReceiveData();
+            connectionHandler = new ConnectionHandler();
+
+            connectionHandler.ConnectToServer(textBoxIP.Text);
+
+            uiThread = new Thread(UIThread);
+            uiThread.Start();
+            timer1.Enabled = true;
+        }
+
+        private void buttonEnviar_Click_1(object sender, EventArgs e)
+        {
+            connectionHandler.Send(TextBoxMensagemEnviar.Text);
+            TextBoxMensagemEnviar.Text = "";
         }
     }
 }
