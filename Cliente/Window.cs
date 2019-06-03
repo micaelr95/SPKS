@@ -15,6 +15,7 @@ namespace Cliente
     {
         ConnectionHandler connectionHandler;
         Thread uiThread;
+        public static bool timerEnable = false;
 
         public Window()
         {
@@ -25,10 +26,11 @@ namespace Cliente
         {
             connectionHandler = new ConnectionHandler();
 
-            connectionHandler.ConnectToServer(textBoxIP.Text, timer1);
+            connectionHandler.ConnectToServer(textBoxIP.Text);
 
             uiThread = new Thread(UIThread);
             uiThread.Start();
+            timer1.Enabled = true;
         }
 
         private void buttonEnviar_Click(object sender, EventArgs e)
@@ -50,12 +52,25 @@ namespace Cliente
                 this.Invoke((MethodInvoker)delegate ()
                 {
                     listBoxMensagens.DataSource = null;
-                    listBoxMensagens.DataSource = connectionHandler.msgs;
-                    timer1.Tick += new EventHandler(connectionHandler.ReceiveData);
-                    timer1.Start();
+                    listBoxMensagens.DataSource = ConnectionHandler.msgs;
                 });
                 Thread.Sleep(1000);
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (timerEnable == false)
+            {
+                timerEnable = true;
+                connectionHandler.ReceiveData();
+
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //connectionHandler.ReceiveData();
         }
     }
 }

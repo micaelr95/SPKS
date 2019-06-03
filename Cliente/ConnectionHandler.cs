@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using EI.SI;
 
 namespace Cliente
@@ -17,10 +18,10 @@ namespace Cliente
         static ProtocolSI protocolSI;
         static TcpClient tcpClient;
 
-        public List<string> msgs = new List<string>();
+        public static List<string> msgs = new List<string>();
         System.Windows.Forms.Timer timer;
 
-        public void ConnectToServer(string ip, System.Windows.Forms.Timer t)
+        public void ConnectToServer(string ip)
         {
             tcpClient = new TcpClient();
 
@@ -29,8 +30,6 @@ namespace Cliente
             networkStream = tcpClient.GetStream();
 
             protocolSI = new ProtocolSI();
-
-            timer = t;
 
             msgs.Add("Conectado ao servidor");
         }
@@ -55,14 +54,13 @@ namespace Cliente
             ReceiveDataThread();
         }
 
-        public void ReceiveData(Object myObject, EventArgs myEventArgs)
+        public void ReceiveData()
         {
             new Thread(ReceiveDataThread).Start();
         }
 
         private void ReceiveDataThread()
         {
-            timer.Stop();
             string textAux = "";
 
             // Envia uma mensagem do tipo USER_OPTION_1
@@ -89,9 +87,10 @@ namespace Cliente
                 }
 
             }
+            Console.WriteLine("Output consola: " + textAux);
             msgs.Add(textAux);
 
-            timer.Start();
+            Window.timerEnable = false ;
         }
 
         public void CloseConnection()

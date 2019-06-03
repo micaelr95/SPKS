@@ -93,6 +93,7 @@ namespace Servidor
                                 byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, stringChunk);
                                 networkStream.Write(packet, 0, packet.Length);
                             }
+                            Thread.Sleep(100);
                             // Envia EOF
                             byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
                             networkStream.Write(eof, 0, eof.Length);
