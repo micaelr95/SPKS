@@ -106,8 +106,24 @@ namespace Servidor
                                     stringChunk = message.Substring(i, CHUNKSIZE);
                                 }
 
+                                // Converte a mensagem a enviar para bytes
+                                byte[] messageBytes = Encoding.UTF8.GetBytes(stringChunk);
+
+                                byte[] msgCifrada;
+
+                                // Cifra a mensagem
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                    {
+                                        cs.Write(messageBytes, 0, messageBytes.Length);
+                                    }
+                                    // Guarda a mensagem cifrada
+                                    msgCifrada = ms.ToArray();
+                                }
+                                
                                 // Envia a mensagem
-                                byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, stringChunk);
+                                byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
                                 networkStream.Write(packet, 0, packet.Length);
                             }
                             Thread.Sleep(100);

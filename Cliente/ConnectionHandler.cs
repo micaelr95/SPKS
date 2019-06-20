@@ -51,6 +51,7 @@ namespace Cliente
             
             byte[] msgCifrada;
 
+            // Cifra a mensagem
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
@@ -118,7 +119,7 @@ namespace Cliente
 
         private void ReceiveDataThread()
         {
-            string textAux = "";
+            byte[] msgBytes = new byte[1024];
 
             // Envia uma mensagem do tipo USER_OPTION_1
             byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
@@ -135,7 +136,7 @@ namespace Cliente
                     }
                     else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
                     {
-                        textAux = textAux + protocolSI.GetStringFromData();
+                        msgBytes = protocolSI.GetData();
                     }
                 }
                 catch (Exception)
@@ -144,8 +145,19 @@ namespace Cliente
                 }
 
             }
-            Console.WriteLine("Output consola: " + textAux);
-            msgs.Add(textAux);
+
+            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+            // Guarda a mensagem decifrada
+            string msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+
+            Console.WriteLine("Output consola: " + msg);
+            msgs.Add(msg);
 
             Window.timerEnable = false ;
         }
