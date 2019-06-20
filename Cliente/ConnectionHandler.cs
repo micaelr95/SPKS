@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -19,7 +20,7 @@ namespace Cliente
         static ProtocolSI protocolSI;
         static TcpClient tcpClient;
 
-        //
+        // Guarda os dados da chave simetrica
         AesCryptoServiceProvider aes;
 
         public static List<string> msgs = new List<string>();
@@ -45,7 +46,23 @@ namespace Cliente
 
         private void SendThread(string msg, ProtocolSICmdType type)
         {
-            byte[] packet = protocolSI.Make(type, msg);
+            // Converte a mensagem a enviar para bytes
+            byte[] msgBytes = Encoding.UTF8.GetBytes(msg);
+            
+            byte[] msgCifrada;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(msgBytes, 0, msgBytes.Length);
+                }
+                // Guarda a mensagem cifrada
+                msgCifrada = memoryStream.ToArray();
+            }
+           
+            // Envia os dados para o servidor
+            byte[] packet = protocolSI.Make(type, msgCifrada);
             networkStream.Write(packet, 0, packet.Length);
 
             // Enquanto nao receber um ACK recebe o que o servidor envia

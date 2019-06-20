@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -54,7 +55,17 @@ namespace Servidor
                 {
                     // Se for uma mensagem
                     case ProtocolSICmdType.DATA:
-                        string msg = clientId + ": " + protocolSI.GetStringFromData();
+                        byte[] msgBytes = protocolSI.GetData();
+
+                        byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+                        MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+                        
+                        // Guarda a mensagem decifrada
+                        string msg = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
                         Console.WriteLine("    Cliente " + msg);
 
                         // Guarda os dados no ficheiro
@@ -110,7 +121,6 @@ namespace Servidor
                     case ProtocolSICmdType.USER_OPTION_2:
                         // Recebe a chave publica do cliente
                         string pk = protocolSI.GetStringFromData();
-                        Console.WriteLine("    Chave Publica: " + pk);
 
                         // Cria uma chave simétrica
                         aes = new AesCryptoServiceProvider();
@@ -136,8 +146,6 @@ namespace Servidor
                         // Envia o ACK para o cliente
                         ack = protocolSI.Make(ProtocolSICmdType.ACK);
                         networkStream.Write(ack, 0, ack.Length);
-
-                        Console.WriteLine("Key Enviada");
 
                         break;
                     default:
