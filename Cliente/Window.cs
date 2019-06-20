@@ -57,6 +57,9 @@ namespace Cliente
 
             connectionHandler.ConnectToServer(textBoxIP.Text);
 
+            // Envia a chave publica para o servidor
+            connectionHandler.ExchangeKeys();
+
             uiThread = new Thread(UIThread);
             uiThread.Start();
             timer1.Enabled = true;

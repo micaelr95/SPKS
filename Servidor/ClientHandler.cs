@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,11 @@ namespace Servidor
 
         private TcpClient client;
         private int clientId;
+
+        // Cripto
+        AesCryptoServiceProvider aes;
+        byte[] key;
+        byte[] iv;
 
         public ClientHandler(TcpClient client, int clientId)
         {
@@ -98,6 +104,40 @@ namespace Servidor
                             byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
                             networkStream.Write(eof, 0, eof.Length);
                         }
+
+                        break;
+                    // Troca de chaves
+                    case ProtocolSICmdType.USER_OPTION_2:
+                        // Recebe a chave publica do cliente
+                        string pk = protocolSI.GetStringFromData();
+                        Console.WriteLine("    Chave Publica: " + pk);
+
+                        // Cria uma chave simétrica
+                        aes = new AesCryptoServiceProvider();
+
+                        // Guarda a chave simetrica
+                        key = aes.Key;
+                        iv = aes.IV;
+
+                        // Cria chave publica do cliente para poder encriptar
+                        RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                        rsa.FromXmlString(pk);
+
+                        // Cria um array com as duas keys
+                        byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
+
+                        // Encripta a key e o iv
+                        byte[] keyEnc = rsa.Encrypt(keys, true);
+
+                        // Envia a key
+                        byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
+                        networkStream.Write(keyPacket, 0, keyPacket.Length);
+
+                        // Envia o ACK para o cliente
+                        ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                        networkStream.Write(ack, 0, ack.Length);
+
+                        Console.WriteLine("Key Enviada");
 
                         break;
                     default:

@@ -186,6 +186,7 @@
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(168, 20);
             this.textBoxIP.TabIndex = 31;
+            this.textBoxIP.Text = "localhost";
             // 
             // buttonCantoInferiorDireito
             // 

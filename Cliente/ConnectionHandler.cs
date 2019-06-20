@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,10 @@ namespace Cliente
         static ProtocolSI protocolSI;
         static TcpClient tcpClient;
 
+        //
+        AesCryptoServiceProvider aes;
+
         public static List<string> msgs = new List<string>();
-        System.Windows.Forms.Timer timer;
 
         public void ConnectToServer(string ip)
         {
@@ -34,15 +37,15 @@ namespace Cliente
             msgs.Add("Conectado ao servidor");
         }
 
-        public void Send(string message)
+        public void Send(string message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
         {
-            Thread thread = new Thread(() => SendThread(message));
+            Thread thread = new Thread(() => SendThread(message, type));
             thread.Start();
         }
 
-        private void SendThread(string msg)
+        private void SendThread(string msg, ProtocolSICmdType type)
         {
-            byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msg);
+            byte[] packet = protocolSI.Make(type, msg);
             networkStream.Write(packet, 0, packet.Length);
 
             // Enquanto nao receber um ACK recebe o que o servidor envia
@@ -52,6 +55,43 @@ namespace Cliente
             }
 
             ReceiveDataThread();
+        }
+
+        public void ExchangeKeys()
+        {
+            // Guarda as chaves (Assimetrica)
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+
+            // Chave publica
+            string publicKey = rsa.ToXmlString(false);
+
+            byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, publicKey);
+            networkStream.Write(packet, 0, packet.Length);
+
+            byte[] receivedData = new byte[1024];
+
+            // Enquanto nao receber um ACK recebe o que o servidor envia
+            while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+            {
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_2)
+                {
+                    receivedData = protocolSI.GetData();
+                }
+            }
+
+            // Decifra as keys usando a chave privada
+            byte[] decryptedKeys = rsa.Decrypt(receivedData, true);
+
+            string keys = Encoding.UTF8.GetString(decryptedKeys);
+            // Subdivide a string recebida e guarda a key e o iv
+            string key = keys.Substring(0, keys.IndexOf(" "));
+            string iv = keys.Substring(keys.IndexOf(" ") + 1);
+
+            // Guarda as chaves de encriptacao do servidor
+            aes = new AesCryptoServiceProvider();
+            aes.Key = Convert.FromBase64String(key);
+            aes.IV = Convert.FromBase64String(iv);
         }
 
         public void ReceiveData()
