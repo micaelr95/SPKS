@@ -15,23 +15,22 @@ namespace Servidor
         {
             using (StreamWriter streamWriter = File.AppendText(fileName))
             {
-                streamWriter.WriteLine(msg);
+                streamWriter.Write(msg + ";");
             }
-            //File.WriteAllText(fileName, msg);
         }
 
-        public static List<string> LoadData()
+        public static string LoadData()
         {
-            List<string> fData = new List<string>();
+            string log = "";
             try
             {
-                fData = File.ReadLines(fileName).ToList<string>();
+                log = File.ReadAllText(fileName);
             }
             catch (Exception)
             {
                 Console.WriteLine("ERROR: LoadData");
             }
-            return fData;
+            return log;
         }
     }
 }

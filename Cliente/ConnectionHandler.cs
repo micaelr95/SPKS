@@ -119,7 +119,7 @@ namespace Cliente
 
         private void ReceiveDataThread()
         {
-            byte[] msgBytes = new byte[1024];
+            string msg = "";
 
             // Envia uma mensagem do tipo USER_OPTION_1
             byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
@@ -136,7 +136,19 @@ namespace Cliente
                     }
                     else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
                     {
-                        msgBytes = protocolSI.GetData();
+                        // Recebe a mensagem do servidor
+                        byte[] msgBytes = protocolSI.GetData();
+
+                        // Cria o array para guardar a mensagem decifrada
+                        byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+                        // Decifra a mensagem
+                        MemoryStream memoryStream = new MemoryStream(msgBytes);
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                        // Guarda a mensagem decifrada
+                        msg = msg + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
                     }
                 }
                 catch (Exception)
@@ -146,20 +158,14 @@ namespace Cliente
 
             }
 
-            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-            MemoryStream memoryStream = new MemoryStream(msgBytes);
-
-            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-            // Guarda a mensagem decifrada
-            string msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-
+            // Limpa as mensagem
+            msgs.Clear();
+            
             Console.WriteLine("Output consola: " + msg);
+            // Adiciona a mensagem recebida à caixa de mensagens
             msgs.Add(msg);
-
-            Window.timerEnable = false ;
+            
+            Window.timerEnable = false;
         }
 
         public void CloseConnection()

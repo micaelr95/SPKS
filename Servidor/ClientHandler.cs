@@ -84,26 +84,26 @@ namespace Servidor
                         networkStream.Write(ack, 0, ack.Length);
                         break;
                     case ProtocolSICmdType.USER_OPTION_1:
-                        List<string> log = FileHandler.LoadData();
+                        string log = FileHandler.LoadData();
 
-                        foreach (string message in log)
+                        if (log.Length > 0)
                         {
                             // Variavel auxiliar
                             string stringChunk = "";
 
                             // Tamanho da resposta
-                            int stringLenght = message.Length;
+                            int stringLenght = log.Length;
 
-                            for (int i = 0; i < message.Length; i = i + CHUNKSIZE)
+                            for (int i = 0; i < log.Length; i = i + CHUNKSIZE)
                             {
                                 if (CHUNKSIZE > stringLenght)
                                 {
-                                    stringChunk = message.Substring(i);
+                                    stringChunk = log.Substring(i);
                                 }
                                 else
                                 {
                                     stringLenght = stringLenght - CHUNKSIZE;
-                                    stringChunk = message.Substring(i, CHUNKSIZE);
+                                    stringChunk = log.Substring(i, CHUNKSIZE);
                                 }
 
                                 // Converte a mensagem a enviar para bytes
@@ -121,7 +121,9 @@ namespace Servidor
                                     // Guarda a mensagem cifrada
                                     msgCifrada = ms.ToArray();
                                 }
-                                
+
+                                Thread.Sleep(100);
+
                                 // Envia a mensagem
                                 byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
                                 networkStream.Write(packet, 0, packet.Length);
