@@ -158,12 +158,37 @@ namespace Cliente
 
             }
 
+            Console.WriteLine("Mensagem Recebida: " + msg);
+
             // Limpa as mensagem
             msgs.Clear();
-            
-            Console.WriteLine("Output consola: " + msg);
-            // Adiciona a mensagem recebida à caixa de mensagens
-            msgs.Add(msg);
+
+            // Tamanho da resposta
+            int stringLenght = msg.Length;
+
+            int chunksize = msg.IndexOf(";");
+
+            string stringChunk = "";
+
+            for (int i = 0; i < msg.Length; i += chunksize)
+            {
+                chunksize = msg.IndexOf(";", chunksize + 1);
+
+                if (chunksize > stringLenght)
+                {
+                    stringChunk = msg.Substring(i);
+                }
+                else
+                {
+                    stringLenght -= chunksize;
+                    stringChunk = msg.Substring(i, chunksize);
+                }
+
+                Console.WriteLine("Mensagem: " + stringChunk + 1);
+
+                // Adiciona a mensagem recebida à caixa de mensagens
+                msgs.Add(stringChunk);
+            }
             
             Window.timerEnable = false;
         }
