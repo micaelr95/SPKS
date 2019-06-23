@@ -31,11 +31,11 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Window));
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxChat = new System.Windows.Forms.GroupBox();
             this.listBoxChat = new System.Windows.Forms.ListBox();
             this.TextBoxMensagemEnviar = new System.Windows.Forms.TextBox();
             this.buttonEnviar = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxAutenticacao = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonEntrar = new System.Windows.Forms.Button();
             this.textBoxNome = new System.Windows.Forms.TextBox();
@@ -62,9 +62,11 @@
             this.labelPlayer2Name = new System.Windows.Forms.Label();
             this.labelPlayer1Name = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxJogo = new System.Windows.Forms.GroupBox();
+            this.groupBoxChat.SuspendLayout();
+            this.groupBoxAutenticacao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBoxJogo.SuspendLayout();
             this.SuspendLayout();
             // 
             // timer1
@@ -72,17 +74,18 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // groupBox2
+            // groupBoxChat
             // 
-            this.groupBox2.Controls.Add(this.listBoxChat);
-            this.groupBox2.Controls.Add(this.TextBoxMensagemEnviar);
-            this.groupBox2.Controls.Add(this.buttonEnviar);
-            this.groupBox2.Location = new System.Drawing.Point(477, 157);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(248, 308);
-            this.groupBox2.TabIndex = 58;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Chat da sala";
+            this.groupBoxChat.Controls.Add(this.listBoxChat);
+            this.groupBoxChat.Controls.Add(this.TextBoxMensagemEnviar);
+            this.groupBoxChat.Controls.Add(this.buttonEnviar);
+            this.groupBoxChat.Enabled = false;
+            this.groupBoxChat.Location = new System.Drawing.Point(477, 178);
+            this.groupBoxChat.Name = "groupBoxChat";
+            this.groupBoxChat.Size = new System.Drawing.Size(248, 308);
+            this.groupBoxChat.TabIndex = 58;
+            this.groupBoxChat.TabStop = false;
+            this.groupBoxChat.Text = "Chat da sala";
             // 
             // listBoxChat
             // 
@@ -112,22 +115,22 @@
             this.buttonEnviar.UseVisualStyleBackColor = true;
             this.buttonEnviar.Click += new System.EventHandler(this.buttonEnviar_Click_1);
             // 
-            // groupBox1
+            // groupBoxAutenticacao
             // 
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.buttonEntrar);
-            this.groupBox1.Controls.Add(this.textBoxNome);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.textBoxIP);
-            this.groupBox1.Location = new System.Drawing.Point(477, 15);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBox1.Size = new System.Drawing.Size(248, 135);
-            this.groupBox1.TabIndex = 57;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Autenticação";
+            this.groupBoxAutenticacao.Controls.Add(this.label3);
+            this.groupBoxAutenticacao.Controls.Add(this.buttonEntrar);
+            this.groupBoxAutenticacao.Controls.Add(this.textBoxNome);
+            this.groupBoxAutenticacao.Controls.Add(this.label4);
+            this.groupBoxAutenticacao.Controls.Add(this.label1);
+            this.groupBoxAutenticacao.Controls.Add(this.textBox2);
+            this.groupBoxAutenticacao.Controls.Add(this.textBoxIP);
+            this.groupBoxAutenticacao.Location = new System.Drawing.Point(477, 15);
+            this.groupBoxAutenticacao.Name = "groupBoxAutenticacao";
+            this.groupBoxAutenticacao.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.groupBoxAutenticacao.Size = new System.Drawing.Size(248, 135);
+            this.groupBoxAutenticacao.TabIndex = 57;
+            this.groupBoxAutenticacao.TabStop = false;
+            this.groupBoxAutenticacao.Text = "Autenticação";
             // 
             // label3
             // 
@@ -190,7 +193,7 @@
             // 
             // buttonCantoInferiorDireito
             // 
-            this.buttonCantoInferiorDireito.Location = new System.Drawing.Point(315, 192);
+            this.buttonCantoInferiorDireito.Location = new System.Drawing.Point(307, 200);
             this.buttonCantoInferiorDireito.Name = "buttonCantoInferiorDireito";
             this.buttonCantoInferiorDireito.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoInferiorDireito.TabIndex = 56;
@@ -198,7 +201,7 @@
             // 
             // buttonCentroBaixo
             // 
-            this.buttonCentroBaixo.Location = new System.Drawing.Point(198, 192);
+            this.buttonCentroBaixo.Location = new System.Drawing.Point(190, 200);
             this.buttonCentroBaixo.Name = "buttonCentroBaixo";
             this.buttonCentroBaixo.Size = new System.Drawing.Size(76, 65);
             this.buttonCentroBaixo.TabIndex = 55;
@@ -206,7 +209,7 @@
             // 
             // buttonCantoInferiorEsquerdo
             // 
-            this.buttonCantoInferiorEsquerdo.Location = new System.Drawing.Point(83, 192);
+            this.buttonCantoInferiorEsquerdo.Location = new System.Drawing.Point(75, 200);
             this.buttonCantoInferiorEsquerdo.Name = "buttonCantoInferiorEsquerdo";
             this.buttonCantoInferiorEsquerdo.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoInferiorEsquerdo.TabIndex = 54;
@@ -214,7 +217,7 @@
             // 
             // buttonCantoSuperiorDireito
             // 
-            this.buttonCantoSuperiorDireito.Location = new System.Drawing.Point(315, 101);
+            this.buttonCantoSuperiorDireito.Location = new System.Drawing.Point(307, 109);
             this.buttonCantoSuperiorDireito.Name = "buttonCantoSuperiorDireito";
             this.buttonCantoSuperiorDireito.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoSuperiorDireito.TabIndex = 53;
@@ -223,7 +226,7 @@
             // 
             // buttonCentroCima
             // 
-            this.buttonCentroCima.Location = new System.Drawing.Point(198, 101);
+            this.buttonCentroCima.Location = new System.Drawing.Point(190, 109);
             this.buttonCentroCima.Name = "buttonCentroCima";
             this.buttonCentroCima.Size = new System.Drawing.Size(76, 65);
             this.buttonCentroCima.TabIndex = 52;
@@ -231,7 +234,7 @@
             // 
             // buttonCantoSuperiorEsquerdo
             // 
-            this.buttonCantoSuperiorEsquerdo.Location = new System.Drawing.Point(83, 101);
+            this.buttonCantoSuperiorEsquerdo.Location = new System.Drawing.Point(75, 109);
             this.buttonCantoSuperiorEsquerdo.Name = "buttonCantoSuperiorEsquerdo";
             this.buttonCantoSuperiorEsquerdo.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoSuperiorEsquerdo.TabIndex = 51;
@@ -241,7 +244,7 @@
             // 
             this.labelPlayer2Ponto5.AutoSize = true;
             this.labelPlayer2Ponto5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Ponto5.Location = new System.Drawing.Point(346, 423);
+            this.labelPlayer2Ponto5.Location = new System.Drawing.Point(399, 415);
             this.labelPlayer2Ponto5.Name = "labelPlayer2Ponto5";
             this.labelPlayer2Ponto5.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer2Ponto5.TabIndex = 50;
@@ -251,7 +254,7 @@
             // 
             this.labelPlayer2Ponto4.AutoSize = true;
             this.labelPlayer2Ponto4.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Ponto4.Location = new System.Drawing.Point(310, 423);
+            this.labelPlayer2Ponto4.Location = new System.Drawing.Point(345, 415);
             this.labelPlayer2Ponto4.Name = "labelPlayer2Ponto4";
             this.labelPlayer2Ponto4.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer2Ponto4.TabIndex = 49;
@@ -261,7 +264,7 @@
             // 
             this.labelPlayer2Ponto3.AutoSize = true;
             this.labelPlayer2Ponto3.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Ponto3.Location = new System.Drawing.Point(274, 423);
+            this.labelPlayer2Ponto3.Location = new System.Drawing.Point(291, 415);
             this.labelPlayer2Ponto3.Name = "labelPlayer2Ponto3";
             this.labelPlayer2Ponto3.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer2Ponto3.TabIndex = 48;
@@ -271,7 +274,7 @@
             // 
             this.labelPlayer2Ponto2.AutoSize = true;
             this.labelPlayer2Ponto2.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Ponto2.Location = new System.Drawing.Point(238, 423);
+            this.labelPlayer2Ponto2.Location = new System.Drawing.Point(237, 415);
             this.labelPlayer2Ponto2.Name = "labelPlayer2Ponto2";
             this.labelPlayer2Ponto2.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer2Ponto2.TabIndex = 47;
@@ -281,7 +284,7 @@
             // 
             this.labelPlayer2Ponto1.AutoSize = true;
             this.labelPlayer2Ponto1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Ponto1.Location = new System.Drawing.Point(201, 423);
+            this.labelPlayer2Ponto1.Location = new System.Drawing.Point(183, 415);
             this.labelPlayer2Ponto1.Name = "labelPlayer2Ponto1";
             this.labelPlayer2Ponto1.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer2Ponto1.TabIndex = 46;
@@ -291,7 +294,7 @@
             // 
             this.labelPlayer1Ponto5.AutoSize = true;
             this.labelPlayer1Ponto5.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Ponto5.Location = new System.Drawing.Point(346, 370);
+            this.labelPlayer1Ponto5.Location = new System.Drawing.Point(399, 362);
             this.labelPlayer1Ponto5.Name = "labelPlayer1Ponto5";
             this.labelPlayer1Ponto5.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer1Ponto5.TabIndex = 45;
@@ -301,7 +304,7 @@
             // 
             this.labelPlayer1Ponto4.AutoSize = true;
             this.labelPlayer1Ponto4.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Ponto4.Location = new System.Drawing.Point(310, 370);
+            this.labelPlayer1Ponto4.Location = new System.Drawing.Point(345, 362);
             this.labelPlayer1Ponto4.Name = "labelPlayer1Ponto4";
             this.labelPlayer1Ponto4.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer1Ponto4.TabIndex = 44;
@@ -311,7 +314,7 @@
             // 
             this.labelPlayer1Ponto3.AutoSize = true;
             this.labelPlayer1Ponto3.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Ponto3.Location = new System.Drawing.Point(274, 370);
+            this.labelPlayer1Ponto3.Location = new System.Drawing.Point(291, 362);
             this.labelPlayer1Ponto3.Name = "labelPlayer1Ponto3";
             this.labelPlayer1Ponto3.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer1Ponto3.TabIndex = 43;
@@ -321,7 +324,7 @@
             // 
             this.labelPlayer1Ponto2.AutoSize = true;
             this.labelPlayer1Ponto2.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Ponto2.Location = new System.Drawing.Point(238, 370);
+            this.labelPlayer1Ponto2.Location = new System.Drawing.Point(237, 362);
             this.labelPlayer1Ponto2.Name = "labelPlayer1Ponto2";
             this.labelPlayer1Ponto2.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer1Ponto2.TabIndex = 42;
@@ -331,7 +334,7 @@
             // 
             this.labelPlayer1Ponto1.AutoSize = true;
             this.labelPlayer1Ponto1.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Ponto1.Location = new System.Drawing.Point(201, 370);
+            this.labelPlayer1Ponto1.Location = new System.Drawing.Point(183, 362);
             this.labelPlayer1Ponto1.Name = "labelPlayer1Ponto1";
             this.labelPlayer1Ponto1.Size = new System.Drawing.Size(48, 42);
             this.labelPlayer1Ponto1.TabIndex = 41;
@@ -341,78 +344,90 @@
             // 
             this.labelPlayer2Name.AutoSize = true;
             this.labelPlayer2Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Name.Location = new System.Drawing.Point(15, 423);
+            this.labelPlayer2Name.Location = new System.Drawing.Point(6, 415);
             this.labelPlayer2Name.Name = "labelPlayer2Name";
-            this.labelPlayer2Name.Size = new System.Drawing.Size(134, 42);
+            this.labelPlayer2Name.Size = new System.Drawing.Size(174, 42);
             this.labelPlayer2Name.TabIndex = 40;
-            this.labelPlayer2Name.Text = "Pedro:";
+            this.labelPlayer2Name.Text = "Player 2:";
             // 
             // labelPlayer1Name
             // 
             this.labelPlayer1Name.AutoSize = true;
             this.labelPlayer1Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Name.Location = new System.Drawing.Point(15, 370);
+            this.labelPlayer1Name.Location = new System.Drawing.Point(6, 362);
             this.labelPlayer1Name.Name = "labelPlayer1Name";
-            this.labelPlayer1Name.Size = new System.Drawing.Size(115, 42);
+            this.labelPlayer1Name.Size = new System.Drawing.Size(174, 42);
             this.labelPlayer1Name.TabIndex = 39;
-            this.labelPlayer1Name.Text = "João:";
+            this.labelPlayer1Name.Text = "Player 1:";
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(15, 15);
+            this.pictureBox1.Location = new System.Drawing.Point(6, 19);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(446, 340);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 38;
             this.pictureBox1.TabStop = false;
             // 
+            // groupBoxJogo
+            // 
+            this.groupBoxJogo.Controls.Add(this.buttonCantoInferiorDireito);
+            this.groupBoxJogo.Controls.Add(this.buttonCentroBaixo);
+            this.groupBoxJogo.Controls.Add(this.buttonCantoSuperiorEsquerdo);
+            this.groupBoxJogo.Controls.Add(this.buttonCentroCima);
+            this.groupBoxJogo.Controls.Add(this.buttonCantoInferiorEsquerdo);
+            this.groupBoxJogo.Controls.Add(this.buttonCantoSuperiorDireito);
+            this.groupBoxJogo.Controls.Add(this.pictureBox1);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Name);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Name);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Ponto1);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Ponto2);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Ponto3);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Ponto4);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer1Ponto5);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Ponto1);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Ponto5);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Ponto2);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Ponto4);
+            this.groupBoxJogo.Controls.Add(this.labelPlayer2Ponto3);
+            this.groupBoxJogo.Enabled = false;
+            this.groupBoxJogo.Location = new System.Drawing.Point(12, 15);
+            this.groupBoxJogo.Name = "groupBoxJogo";
+            this.groupBoxJogo.Size = new System.Drawing.Size(459, 471);
+            this.groupBoxJogo.TabIndex = 59;
+            this.groupBoxJogo.TabStop = false;
+            this.groupBoxJogo.Text = "Jogo";
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(740, 481);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.buttonCantoInferiorDireito);
-            this.Controls.Add(this.buttonCentroBaixo);
-            this.Controls.Add(this.buttonCantoInferiorEsquerdo);
-            this.Controls.Add(this.buttonCantoSuperiorDireito);
-            this.Controls.Add(this.buttonCentroCima);
-            this.Controls.Add(this.buttonCantoSuperiorEsquerdo);
-            this.Controls.Add(this.labelPlayer2Ponto5);
-            this.Controls.Add(this.labelPlayer2Ponto4);
-            this.Controls.Add(this.labelPlayer2Ponto3);
-            this.Controls.Add(this.labelPlayer2Ponto2);
-            this.Controls.Add(this.labelPlayer2Ponto1);
-            this.Controls.Add(this.labelPlayer1Ponto5);
-            this.Controls.Add(this.labelPlayer1Ponto4);
-            this.Controls.Add(this.labelPlayer1Ponto3);
-            this.Controls.Add(this.labelPlayer1Ponto2);
-            this.Controls.Add(this.labelPlayer1Ponto1);
-            this.Controls.Add(this.labelPlayer2Name);
-            this.Controls.Add(this.labelPlayer1Name);
-            this.Controls.Add(this.pictureBox1);
+            this.ClientSize = new System.Drawing.Size(736, 491);
+            this.Controls.Add(this.groupBoxJogo);
+            this.Controls.Add(this.groupBoxChat);
+            this.Controls.Add(this.groupBoxAutenticacao);
             this.Name = "Window";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Window_FormClosing);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxChat.ResumeLayout(false);
+            this.groupBoxChat.PerformLayout();
+            this.groupBoxAutenticacao.ResumeLayout(false);
+            this.groupBoxAutenticacao.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBoxJogo.ResumeLayout(false);
+            this.groupBoxJogo.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
         public System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBoxChat;
         private System.Windows.Forms.ListBox listBoxChat;
         private System.Windows.Forms.TextBox TextBoxMensagemEnviar;
         private System.Windows.Forms.Button buttonEnviar;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBoxAutenticacao;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonEntrar;
         private System.Windows.Forms.TextBox textBoxNome;
@@ -439,6 +454,7 @@
         private System.Windows.Forms.Label labelPlayer2Name;
         private System.Windows.Forms.Label labelPlayer1Name;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.GroupBox groupBoxJogo;
     }
 }
 

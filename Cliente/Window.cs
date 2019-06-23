@@ -63,6 +63,10 @@ namespace Cliente
             uiThread = new Thread(UIThread);
             uiThread.Start();
             timer1.Enabled = true;
+
+            groupBoxAutenticacao.Enabled = false;
+            groupBoxChat.Enabled = true;
+            groupBoxJogo.Enabled = true;
         }
 
         private void buttonEnviar_Click_1(object sender, EventArgs e)
