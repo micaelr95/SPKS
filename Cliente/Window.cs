@@ -89,5 +89,35 @@ namespace Cliente
             connectionHandler.Send(TextBoxMensagemEnviar.Text);
             TextBoxMensagemEnviar.Text = "";
         }
+
+        private void buttonCantoInferiorDireito_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(2 + " " + 3, EI.SI.ProtocolSICmdType.USER_OPTION_4);
+        }
+
+        private void buttonCantoSuperiorEsquerdo_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(1 + " " + 1, EI.SI.ProtocolSICmdType.USER_OPTION_4);
+        }
+
+        private void buttonCentroCima_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(1 + " " + 2, EI.SI.ProtocolSICmdType.USER_OPTION_4);     
+        }
+
+        private void buttonCantoSuperiorDireito_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(1 + " " + 3, EI.SI.ProtocolSICmdType.USER_OPTION_4);
+        }
+
+        private void buttonCentroBaixo_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(2 + " " + 2, EI.SI.ProtocolSICmdType.USER_OPTION_4);
+        }
+
+        private void buttonCantoInferiorEsquerdo_Click(object sender, EventArgs e)
+        {
+            connectionHandler.Send(2 + " " + 1, EI.SI.ProtocolSICmdType.USER_OPTION_4);
+        }
     }
 }

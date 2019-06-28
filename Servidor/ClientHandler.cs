@@ -240,6 +240,31 @@ namespace Servidor
                             }
 
                         } break;
+                    case ProtocolSICmdType.USER_OPTION_4:
+                        {
+                            byte[] msgBytes = null;
+
+                            try
+                            {
+                                msgBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                            // Guarda a mensagem decifrada
+                            string jogada = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            Console.WriteLine("    Cliente jogou: " + jogada);
+                        } break;
                     default:
                         break;
                 }

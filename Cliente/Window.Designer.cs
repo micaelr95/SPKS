@@ -196,52 +196,70 @@
             // 
             // buttonCantoInferiorDireito
             // 
+            this.buttonCantoInferiorDireito.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCantoInferiorDireito.BackgroundImage")));
+            this.buttonCantoInferiorDireito.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCantoInferiorDireito.Location = new System.Drawing.Point(307, 200);
             this.buttonCantoInferiorDireito.Name = "buttonCantoInferiorDireito";
             this.buttonCantoInferiorDireito.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoInferiorDireito.TabIndex = 56;
             this.buttonCantoInferiorDireito.UseVisualStyleBackColor = true;
+            this.buttonCantoInferiorDireito.Click += new System.EventHandler(this.buttonCantoInferiorDireito_Click);
             // 
             // buttonCentroBaixo
             // 
+            this.buttonCentroBaixo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCentroBaixo.BackgroundImage")));
+            this.buttonCentroBaixo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCentroBaixo.Location = new System.Drawing.Point(190, 200);
             this.buttonCentroBaixo.Name = "buttonCentroBaixo";
             this.buttonCentroBaixo.Size = new System.Drawing.Size(76, 65);
             this.buttonCentroBaixo.TabIndex = 55;
             this.buttonCentroBaixo.UseVisualStyleBackColor = true;
+            this.buttonCentroBaixo.Click += new System.EventHandler(this.buttonCentroBaixo_Click);
             // 
             // buttonCantoInferiorEsquerdo
             // 
+            this.buttonCantoInferiorEsquerdo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCantoInferiorEsquerdo.BackgroundImage")));
+            this.buttonCantoInferiorEsquerdo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCantoInferiorEsquerdo.Location = new System.Drawing.Point(75, 200);
             this.buttonCantoInferiorEsquerdo.Name = "buttonCantoInferiorEsquerdo";
             this.buttonCantoInferiorEsquerdo.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoInferiorEsquerdo.TabIndex = 54;
             this.buttonCantoInferiorEsquerdo.UseVisualStyleBackColor = true;
+            this.buttonCantoInferiorEsquerdo.Click += new System.EventHandler(this.buttonCantoInferiorEsquerdo_Click);
             // 
             // buttonCantoSuperiorDireito
             // 
+            this.buttonCantoSuperiorDireito.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCantoSuperiorDireito.BackgroundImage")));
+            this.buttonCantoSuperiorDireito.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCantoSuperiorDireito.Location = new System.Drawing.Point(307, 109);
             this.buttonCantoSuperiorDireito.Name = "buttonCantoSuperiorDireito";
             this.buttonCantoSuperiorDireito.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoSuperiorDireito.TabIndex = 53;
             this.buttonCantoSuperiorDireito.TabStop = false;
             this.buttonCantoSuperiorDireito.UseVisualStyleBackColor = true;
+            this.buttonCantoSuperiorDireito.Click += new System.EventHandler(this.buttonCantoSuperiorDireito_Click);
             // 
             // buttonCentroCima
             // 
+            this.buttonCentroCima.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCentroCima.BackgroundImage")));
+            this.buttonCentroCima.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCentroCima.Location = new System.Drawing.Point(190, 109);
             this.buttonCentroCima.Name = "buttonCentroCima";
             this.buttonCentroCima.Size = new System.Drawing.Size(76, 65);
             this.buttonCentroCima.TabIndex = 52;
             this.buttonCentroCima.UseVisualStyleBackColor = true;
+            this.buttonCentroCima.Click += new System.EventHandler(this.buttonCentroCima_Click);
             // 
             // buttonCantoSuperiorEsquerdo
             // 
+            this.buttonCantoSuperiorEsquerdo.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonCantoSuperiorEsquerdo.BackgroundImage")));
+            this.buttonCantoSuperiorEsquerdo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonCantoSuperiorEsquerdo.Location = new System.Drawing.Point(75, 109);
             this.buttonCantoSuperiorEsquerdo.Name = "buttonCantoSuperiorEsquerdo";
             this.buttonCantoSuperiorEsquerdo.Size = new System.Drawing.Size(76, 65);
             this.buttonCantoSuperiorEsquerdo.TabIndex = 51;
             this.buttonCantoSuperiorEsquerdo.UseVisualStyleBackColor = true;
+            this.buttonCantoSuperiorEsquerdo.Click += new System.EventHandler(this.buttonCantoSuperiorEsquerdo_Click);
             // 
             // labelPlayer2Ponto5
             // 
