@@ -15,6 +15,9 @@ namespace Cliente
     {
         ConnectionHandler connectionHandler;
         Thread uiThread;
+        // Guarda o estado da conecao. True está conectado
+        bool status;
+
         public static bool timerEnable = false;
 
         public Window()
@@ -24,8 +27,11 @@ namespace Cliente
 
         private void Window_FormClosing(object sender, FormClosingEventArgs e)
         {
-            uiThread.Abort();
-            connectionHandler.CloseConnection();
+            if (status)
+            {
+                uiThread.Abort();
+                connectionHandler.CloseConnection();
+            }
         }
 
         private void UIThread()
@@ -55,18 +61,27 @@ namespace Cliente
         {
             connectionHandler = new ConnectionHandler();
 
-            connectionHandler.ConnectToServer(textBoxIP.Text);
+            status = connectionHandler.ConnectToServer(textBoxIP.Text);
 
-            // Envia a chave publica para o servidor
-            connectionHandler.ExchangeKeys();
+            if (status)
+            {
+                toolStripStatusLabelStatus.Text = "Conectado";
 
-            uiThread = new Thread(UIThread);
-            uiThread.Start();
-            timer1.Enabled = true;
+                // Envia a chave publica para o servidor
+                connectionHandler.ExchangeKeys();
 
-            groupBoxAutenticacao.Enabled = false;
-            groupBoxChat.Enabled = true;
-            groupBoxJogo.Enabled = true;
+                uiThread = new Thread(UIThread);
+                uiThread.Start();
+                timer1.Enabled = true;
+
+                groupBoxAutenticacao.Enabled = false;
+                groupBoxChat.Enabled = true;
+                groupBoxJogo.Enabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Não foi possivel conectar ao servidor");
+            }
         }
 
         private void buttonEnviar_Click_1(object sender, EventArgs e)

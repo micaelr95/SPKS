@@ -63,10 +63,13 @@
             this.labelPlayer1Name = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBoxJogo = new System.Windows.Forms.GroupBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBoxChat.SuspendLayout();
             this.groupBoxAutenticacao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBoxJogo.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // timer1
@@ -399,11 +402,28 @@
             this.groupBoxJogo.TabStop = false;
             this.groupBoxJogo.Text = "Jogo";
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabelStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 492);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(736, 22);
+            this.statusStrip1.TabIndex = 60;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabelStatus
+            // 
+            this.toolStripStatusLabelStatus.Name = "toolStripStatusLabelStatus";
+            this.toolStripStatusLabelStatus.Size = new System.Drawing.Size(82, 17);
+            this.toolStripStatusLabelStatus.Text = "Desconectado";
+            // 
             // Window
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(736, 491);
+            this.ClientSize = new System.Drawing.Size(736, 514);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBoxJogo);
             this.Controls.Add(this.groupBoxChat);
             this.Controls.Add(this.groupBoxAutenticacao);
@@ -417,7 +437,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBoxJogo.ResumeLayout(false);
             this.groupBoxJogo.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -455,6 +478,8 @@
         private System.Windows.Forms.Label labelPlayer1Name;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox groupBoxJogo;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStatus;
     }
 }
 

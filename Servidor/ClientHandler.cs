@@ -18,6 +18,7 @@ namespace Servidor
 
         private TcpClient client;
         private int clientId;
+        NetworkStream networkStream;
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -39,15 +40,24 @@ namespace Servidor
 
         private void ThreadHandler()
         {
-            NetworkStream networkStream = client.GetStream();
+            networkStream = client.GetStream();
 
             ProtocolSI protocolSI = new ProtocolSI();
 
             // Repete ate receber a mensagem de fim de transmissao
             while (protocolSI.GetCmdType() != ProtocolSICmdType.EOT)
             {
-                // Recebe as mensagens do cliente
-                int bytesRead = networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                try
+                {
+                    // Recebe as mensagens do cliente
+                    int bytesRead = networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Erro: " + ex);
+                    return;
+                }
+
                 byte[] ack;
 
                 // Verifica o tipo de mensagem
@@ -55,117 +65,181 @@ namespace Servidor
                 {
                     // Se for uma mensagem
                     case ProtocolSICmdType.DATA:
-                        byte[] msgBytes = protocolSI.GetData();
+                        {
+                            byte[] msgBytes = null;
 
-                        byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+                            try
+                            {
+                                msgBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
 
-                        MemoryStream memoryStream = new MemoryStream(msgBytes);
+                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
 
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+                            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
                         
-                        // Guarda a mensagem decifrada
-                        string msg = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-                        Console.WriteLine("    Cliente " + msg);
+                            // Guarda a mensagem decifrada
+                            string msg = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            Console.WriteLine("    Cliente " + msg);
 
-                        // Guarda os dados no ficheiro
-                        FileHandler.SaveData(msg);
+                            // Guarda os dados no ficheiro
+                            FileHandler.SaveData(msg);
 
-                        // Envia o ACK para o cliente
-                        ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                        networkStream.Write(ack, 0, ack.Length);
-                        break;
+                            try
+                            {
+                                // Envia o ACK para o cliente
+                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                networkStream.Write(ack, 0, ack.Length);
+                            }
+                            catch(Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                        } break;
                     // Se for para fechar a comunicacao
                     case ProtocolSICmdType.EOT:
-                        Console.WriteLine("O Cliente {0} desconnectou-se", clientId);
-
-                        // Envia o ACK para o cliente
-                        ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                        networkStream.Write(ack, 0, ack.Length);
-                        break;
-                    case ProtocolSICmdType.USER_OPTION_1:
-                        string log = FileHandler.LoadData();
-
-                        if (log.Length > 0)
                         {
-                            // Variavel auxiliar
-                            string stringChunk = "";
-
-                            // Tamanho da resposta
-                            int stringLenght = log.Length;
-
-                            for (int i = 0; i < log.Length; i = i + CHUNKSIZE)
+                            try
                             {
-                                if (CHUNKSIZE > stringLenght)
-                                {
-                                    stringChunk = log.Substring(i);
-                                }
-                                else
-                                {
-                                    stringLenght = stringLenght - CHUNKSIZE;
-                                    stringChunk = log.Substring(i, CHUNKSIZE);
-                                }
+                                // Envia o ACK para o cliente
+                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                networkStream.Write(ack, 0, ack.Length);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+                        } break;
+                    case ProtocolSICmdType.USER_OPTION_1:
+                        {
+                            string log = FileHandler.LoadData();
 
-                                // Converte a mensagem a enviar para bytes
-                                byte[] messageBytes = Encoding.UTF8.GetBytes(stringChunk);
+                            if (log.Length > 0)
+                            {
+                                // Variavel auxiliar
+                                string stringChunk = "";
 
-                                byte[] msgCifrada;
+                                // Tamanho da resposta
+                                int stringLenght = log.Length;
 
-                                // Cifra a mensagem
-                                using (MemoryStream ms = new MemoryStream())
+                                for (int i = 0; i < log.Length; i = i + CHUNKSIZE)
                                 {
-                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                    if (CHUNKSIZE > stringLenght)
                                     {
-                                        cs.Write(messageBytes, 0, messageBytes.Length);
+                                        stringChunk = log.Substring(i);
                                     }
-                                    // Guarda a mensagem cifrada
-                                    msgCifrada = ms.ToArray();
-                                }
+                                    else
+                                    {
+                                        stringLenght = stringLenght - CHUNKSIZE;
+                                        stringChunk = log.Substring(i, CHUNKSIZE);
+                                    }
 
+                                    // Converte a mensagem a enviar para bytes
+                                    byte[] messageBytes = Encoding.UTF8.GetBytes(stringChunk);
+
+                                    byte[] msgCifrada;
+
+                                    // Cifra a mensagem
+                                    using (MemoryStream ms = new MemoryStream())
+                                    {
+                                        using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                        {
+                                            cs.Write(messageBytes, 0, messageBytes.Length);
+                                        }
+                                        // Guarda a mensagem cifrada
+                                        msgCifrada = ms.ToArray();
+                                    }
+
+                                    Thread.Sleep(100);
+
+                                    try
+                                    {
+                                        // Envia a mensagem
+                                        byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
+                                        networkStream.Write(packet, 0, packet.Length);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Erro: " + ex);
+                                        return;
+                                    }
+
+                                }
                                 Thread.Sleep(100);
 
-                                // Envia a mensagem
-                                byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
-                                networkStream.Write(packet, 0, packet.Length);
+                                try
+                                {
+                                    // Envia EOF
+                                    byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
+                                    networkStream.Write(eof, 0, eof.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
-                            Thread.Sleep(100);
-                            // Envia EOF
-                            byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
-                            networkStream.Write(eof, 0, eof.Length);
-                        }
 
-                        break;
+                        } break;
                     // Troca de chaves
                     case ProtocolSICmdType.USER_OPTION_2:
-                        // Recebe a chave publica do cliente
-                        string pk = protocolSI.GetStringFromData();
+                        {
+                            string pk = "";
+                            try
+                            {
+                                // Recebe a chave publica do cliente
+                                pk = protocolSI.GetStringFromData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
 
-                        // Cria uma chave simétrica
-                        aes = new AesCryptoServiceProvider();
+                            // Cria uma chave simétrica
+                            aes = new AesCryptoServiceProvider();
 
-                        // Guarda a chave simetrica
-                        key = aes.Key;
-                        iv = aes.IV;
+                            // Guarda a chave simetrica
+                            key = aes.Key;
+                            iv = aes.IV;
 
-                        // Cria chave publica do cliente para poder encriptar
-                        RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                        rsa.FromXmlString(pk);
+                            // Cria chave publica do cliente para poder encriptar
+                            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                            rsa.FromXmlString(pk);
 
-                        // Cria um array com as duas keys
-                        byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
+                            // Cria um array com as duas keys
+                            byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
 
-                        // Encripta a key e o iv
-                        byte[] keyEnc = rsa.Encrypt(keys, true);
+                            // Encripta a key e o iv
+                            byte[] keyEnc = rsa.Encrypt(keys, true);
 
-                        // Envia a key
-                        byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
-                        networkStream.Write(keyPacket, 0, keyPacket.Length);
+                            try
+                            {
+                                // Envia a key
+                                byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
+                                networkStream.Write(keyPacket, 0, keyPacket.Length);
 
-                        // Envia o ACK para o cliente
-                        ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                        networkStream.Write(ack, 0, ack.Length);
+                                // Envia o ACK para o cliente
+                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                networkStream.Write(ack, 0, ack.Length);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
 
-                        break;
+                        } break;
                     default:
                         break;
                 }
@@ -174,6 +248,8 @@ namespace Servidor
             // Fecha as conecoes
             networkStream.Close();
             client.Close();
+
+            Console.WriteLine("O Cliente {0} desconnectou-se", clientId);
         }
     }
 }

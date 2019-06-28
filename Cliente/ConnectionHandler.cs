@@ -25,17 +25,26 @@ namespace Cliente
 
         public static List<string> msgs = new List<string>();
 
-        public void ConnectToServer(string ip)
+        public bool ConnectToServer(string ip)
         {
-            tcpClient = new TcpClient();
+            try
+            {
+                tcpClient = new TcpClient();
 
-            tcpClient.Connect(ip, PORT);
+                tcpClient.Connect(ip, PORT);
 
-            networkStream = tcpClient.GetStream();
+                networkStream = tcpClient.GetStream();
 
-            protocolSI = new ProtocolSI();
+                protocolSI = new ProtocolSI();
 
-            msgs.Add("Conectado ao servidor");
+                msgs.Add("Conectado ao servidor");
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public void Send(string message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
@@ -62,14 +71,21 @@ namespace Cliente
                 msgCifrada = memoryStream.ToArray();
             }
            
-            // Envia os dados para o servidor
-            byte[] packet = protocolSI.Make(type, msgCifrada);
-            networkStream.Write(packet, 0, packet.Length);
-
-            // Enquanto nao receber um ACK recebe o que o servidor envia
-            while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+            try
             {
-                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                // Envia os dados para o servidor
+                byte[] packet = protocolSI.Make(type, msgCifrada);
+                networkStream.Write(packet, 0, packet.Length);
+
+                // Enquanto nao receber um ACK recebe o que o servidor envia
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                {
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+            }
+            catch(Exception)
+            {
+                return;
             }
 
             ReceiveDataThread();
@@ -83,19 +99,33 @@ namespace Cliente
             // Chave publica
             string publicKey = rsa.ToXmlString(false);
 
-            byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, publicKey);
-            networkStream.Write(packet, 0, packet.Length);
+            try
+            {
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, publicKey);
+                networkStream.Write(packet, 0, packet.Length);
+            }
+            catch(Exception)
+            {
+                return;
+            }
 
             byte[] receivedData = new byte[1024];
 
-            // Enquanto nao receber um ACK recebe o que o servidor envia
-            while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+            try
             {
-                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-                if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_2)
+                // Enquanto nao receber um ACK recebe o que o servidor envia
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
                 {
-                    receivedData = protocolSI.GetData();
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_2)
+                    {
+                        receivedData = protocolSI.GetData();
+                    }
                 }
+            }
+            catch(Exception)
+            {
+                return;
             }
 
             // Decifra as keys usando a chave privada
@@ -121,9 +151,16 @@ namespace Cliente
         {
             string msg = "";
 
-            // Envia uma mensagem do tipo USER_OPTION_1
-            byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
-            networkStream.Write(opt1, 0, opt1.Length);
+            try
+            {
+                // Envia uma mensagem do tipo USER_OPTION_1
+                byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
+                networkStream.Write(opt1, 0, opt1.Length);
+            }
+            catch(Exception)
+            {
+                return;
+            }
 
             while (true)
             {
@@ -195,13 +232,19 @@ namespace Cliente
 
         public void CloseConnection()
         {
-            byte[] eot = protocolSI.Make(ProtocolSICmdType.EOT);
-            networkStream.Write(eot, 0, eot.Length);
+            try
+            {
+                byte[] eot = protocolSI.Make(ProtocolSICmdType.EOT);
+                networkStream.Write(eot, 0, eot.Length);
 
-            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-
-            networkStream.Close();
-            tcpClient.Close();
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                networkStream.Close();
+                tcpClient.Close();
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
     }
 }
