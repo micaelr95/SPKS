@@ -85,25 +85,38 @@ namespace Servidor
 
                             CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
                             int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-                        
+
                             // Guarda a mensagem decifrada
-                            string msg = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-                            Console.WriteLine("    Cliente " + msg);
+                            string msgRecebida = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
 
-                            // Guarda os dados no ficheiro
-                            FileHandler.SaveData(msg);
+                            string hash = msgRecebida.Substring(0, msgRecebida.IndexOf(" "));
+                            msgRecebida = msgRecebida.Substring(msgRecebida.IndexOf(" ") + 1);
 
-                            try
+                            if(Common.ValidacaoDados(msgRecebida, hash))
                             {
-                                // Envia o ACK para o cliente
-                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                networkStream.Write(ack, 0, ack.Length);
+                                string msg = clientId + ": " + msgRecebida;
+                                Console.WriteLine("    Cliente " + msg);
+
+                                // Guarda os dados no ficheiro
+                                FileHandler.SaveData(msg);
+
+                                try
+                                {
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch(Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
-                            catch(Exception ex)
+                            else
                             {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
+                                Console.WriteLine("Hash não é igual");
                             }
+
 
                         } break;
                     // Se for para fechar a comunicacao

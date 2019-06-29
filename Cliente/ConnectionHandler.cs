@@ -151,7 +151,7 @@ namespace Cliente
         private void SendThread(string msg, ProtocolSICmdType type)
         {
             // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(msg);
+            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(msg) + " " + msg);
             
             byte[] msgCifrada;
 
