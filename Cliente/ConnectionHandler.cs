@@ -25,7 +25,7 @@ namespace Cliente
 
         public static List<string> msgs = new List<string>();
 
-        public bool ConnectToServer(string ip)
+        public void ConnectToServer(string ip)
         {
             try
             {
@@ -36,15 +36,50 @@ namespace Cliente
                 networkStream = tcpClient.GetStream();
 
                 protocolSI = new ProtocolSI();
+                
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
 
-                msgs.Add("Conectado ao servidor");
+        public bool Login(string username, string password)
+        {
+            // Converte a mensagem a enviar para bytes
+            byte[] msgBytes = Encoding.UTF8.GetBytes(username + " " + password);
 
-                return true;
+            byte[] msgCifrada;
+
+            // Cifra a mensagem
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(msgBytes, 0, msgBytes.Length);
+                }
+                // Guarda a mensagem cifrada
+                msgCifrada = memoryStream.ToArray();
+            }
+
+            try
+            {
+                // Envia os dados para o servidor
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
+                networkStream.Write(packet, 0, packet.Length);
+
+                // Enquanto nao receber um ACK recebe o que o servidor envia
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                {
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
             }
             catch (Exception)
             {
                 return false;
             }
+
+            return false;
         }
 
         public void Send(string message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
@@ -87,8 +122,7 @@ namespace Cliente
             {
                 return;
             }
-
-            ReceiveDataThread();
+            
         }
 
         public void ExchangeKeys()

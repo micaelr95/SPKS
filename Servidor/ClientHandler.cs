@@ -240,6 +240,50 @@ namespace Servidor
                             }
 
                         } break;
+                    case ProtocolSICmdType.USER_OPTION_3:
+                        {
+                            // Recebe os dados do cliente
+                            byte[] credenciaisBytes = protocolSI.GetData();
+
+                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
+
+                            // Guarda as credenciais decifradas
+                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+
+                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+
+                            Console.WriteLine(username);
+                            Console.WriteLine(password);
+
+                            // Verifica se o utilizador existe na base de dados
+                            SPKSContainer spksContainer = new SPKSContainer();
+                            User utilizador = (from User in spksContainer.Users
+                                               where User.Username.Equals(username)
+                                               select User).FirstOrDefault();
+
+                            // Utilizador nao existe ou nome de utilizador errado
+                            if (utilizador == null)
+                            {
+                                // TODO
+                            }
+                            // Password errada
+                            else if (utilizador.Password != password)
+                            {
+                                // TODO
+                            }
+                            // Utilizador existe e passowrd está certa
+                            else
+                            {
+                                // TODO: Login
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }

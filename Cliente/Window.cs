@@ -61,15 +61,17 @@ namespace Cliente
         {
             connectionHandler = new ConnectionHandler();
 
-            status = connectionHandler.ConnectToServer(textBoxIP.Text);
+            connectionHandler.ConnectToServer(textBoxIP.Text);
+
+            // Envia a chave publica para o servidor
+            connectionHandler.ExchangeKeys();
+
+            status = connectionHandler.Login(textBoxNome.Text, textBoxPassword.Text);
 
             if (status)
             {
                 toolStripStatusLabelStatus.Text = "Conectado";
-
-                // Envia a chave publica para o servidor
-                connectionHandler.ExchangeKeys();
-
+                
                 uiThread = new Thread(UIThread);
                 uiThread.Start();
                 timer1.Enabled = true;
@@ -77,10 +79,6 @@ namespace Cliente
                 groupBoxAutenticacao.Enabled = false;
                 groupBoxChat.Enabled = true;
                 groupBoxJogo.Enabled = true;
-            }
-            else
-            {
-                MessageBox.Show("Não foi possivel conectar ao servidor");
             }
         }
 
