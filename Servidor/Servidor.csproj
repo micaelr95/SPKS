@@ -58,6 +58,8 @@
     <Compile Include="ClientHandler.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="FileHandler.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Room.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SPKS.Context.cs">

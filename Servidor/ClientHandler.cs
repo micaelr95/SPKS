@@ -475,19 +475,27 @@ namespace Servidor
 
                             if (Common.ValidacaoDados(sala, hash))
                             {
-                                // Verifica se o utilizador existe na base de dados
-                                //Room room = (from Room in spksContainer.Rooms
-                                //                   where Room.Name.Equals(sala)
-                                //                   select Room).FirstOrDefault();
-
-                                //// Verifica se a sala existe
-                                //if (room == null)
-                                //{
-                                //    // Cria a sala
-                                //    Room newRoom = new Room(sala, user.Username);
-                                //    spksContainer.Rooms.Add(newRoom);
-                                //    spksContainer.SaveChanges();
-                                //}
+                                // Verifica se a sala existe
+                                if (Game.rooms.Count == 0)
+                                {
+                                    Room newRoom = new Room(sala, user);
+                                    Game.rooms.Add(newRoom);
+                                }
+                                else
+                                {
+                                    foreach (Room room in Game.rooms)
+                                    {
+                                        if (room.ToString() == sala)
+                                        {
+                                            room.AddPlayer2(user);
+                                        }
+                                        else
+                                        {
+                                            Room newRoom = new Room(sala, user);
+                                            Game.rooms.Add(newRoom);
+                                        }
+                                    }
+                                }
 
                                 try
                                 {
