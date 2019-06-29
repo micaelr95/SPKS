@@ -75,6 +75,7 @@ namespace Cliente
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
                 int state = -1;
+                string msg = "";
 
                 // Enquanto nao receber um ACK recebe o que o servidor envia
                 while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
@@ -93,11 +94,22 @@ namespace Cliente
                         int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
 
                         // Guarda a mensagem decifrada
-                        state = int.Parse(Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos));
+                        msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
 
                         networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                     }
                 }
+
+                string hash = msg.Substring(0, msg.IndexOf(" "));
+                msg = msg.Substring(msg.IndexOf(" ") + 1);
+
+                if (!ValidacaoDados(msg, hash))
+                {
+                    Console.WriteLine("Hash não é igual");
+                    return false;
+                }
+
+                state = int.Parse(msg);
 
                 switch (state)
                 {

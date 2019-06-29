@@ -299,8 +299,10 @@ namespace Servidor
                                     state = 0;
                                 }
 
+                                string msg = Common.GeraHash(state.ToString()) + " " + state.ToString();
+
                                 // Converte a mensagem a enviar para bytes
-                                byte[] messageBytes = Encoding.UTF8.GetBytes(state.ToString());
+                                byte[] messageBytes = Encoding.UTF8.GetBytes(msg);
 
                                 byte[] msgCifrada;
 
@@ -314,9 +316,7 @@ namespace Servidor
                                     // Guarda a mensagem cifrada
                                     msgCifrada = ms.ToArray();
                                 }
-
-                                Thread.Sleep(100);
-
+                                
                                 try
                                 {
                                     // Envia a mensagem
