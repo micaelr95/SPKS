@@ -18,6 +18,7 @@ namespace Servidor
 
         private TcpClient client;
         private int clientId;
+        User user;
         NetworkStream networkStream;
         SPKSContainer spksContainer = new SPKSContainer();
 
@@ -94,7 +95,7 @@ namespace Servidor
 
                             if(Common.ValidacaoDados(msgRecebida, hash))
                             {
-                                string msg = clientId + ": " + msgRecebida;
+                                string msg = user.Username + ": " + msgRecebida;
                                 Console.WriteLine("    Cliente " + msg);
 
                                 // Guarda os dados no ficheiro
@@ -309,6 +310,7 @@ namespace Servidor
                                 // Utilizador existe e passowrd está certa
                                 else
                                 {
+                                    user = utilizador;
                                     state = 0;
                                 }
 
