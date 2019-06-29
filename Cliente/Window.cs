@@ -16,18 +16,20 @@ namespace Cliente
         ConnectionHandler connectionHandler;
         Thread uiThread;
         // Guarda o estado da conecao. True está conectado
-        bool status;
+        bool isConnected;
+        bool isLogedin;
 
         public static bool timerEnable = false;
 
         public Window()
         {
             InitializeComponent();
+            isConnected = false;
         }
 
         private void Window_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (status)
+            if (isLogedin)
             {
                 uiThread.Abort();
                 connectionHandler.CloseConnection();
@@ -61,24 +63,27 @@ namespace Cliente
         {
             connectionHandler = new ConnectionHandler();
 
-            connectionHandler.ConnectToServer(textBoxIP.Text);
-
-            // Envia a chave publica para o servidor
-            connectionHandler.ExchangeKeys();
-
-            status = connectionHandler.Login(textBoxNome.Text, textBoxPassword.Text);
-
-            if (status)
+            if (!isConnected)
             {
-                toolStripStatusLabelStatus.Text = "Conectado";
-                
-                uiThread = new Thread(UIThread);
-                uiThread.Start();
-                timer1.Enabled = true;
+                connectionHandler.ConnectToServer(textBoxIP.Text);
+                isConnected = true;
+            }
+            if (isConnected)
+            {
+                isLogedin = connectionHandler.Login(textBoxNome.Text, textBoxPassword.Text);
 
-                groupBoxAutenticacao.Enabled = false;
-                groupBoxChat.Enabled = true;
-                groupBoxJogo.Enabled = true;
+                if (isLogedin)
+                {
+                    toolStripStatusLabelStatus.Text = "Conectado";
+                
+                    uiThread = new Thread(UIThread);
+                    uiThread.Start();
+                    timer1.Enabled = true;
+
+                    groupBoxAutenticacao.Enabled = false;
+                    groupBoxChat.Enabled = true;
+                    groupBoxJogo.Enabled = true;
+                }
             }
         }
 

@@ -21,7 +21,7 @@ namespace Cliente
         static TcpClient tcpClient;
 
         // Guarda os dados da chave simetrica
-        AesCryptoServiceProvider aes;
+        static AesCryptoServiceProvider aes;
 
         public static List<string> msgs = new List<string>();
 
@@ -36,7 +36,9 @@ namespace Cliente
                 networkStream = tcpClient.GetStream();
 
                 protocolSI = new ProtocolSI();
-                
+
+                // Envia a chave publica para o servidor
+                ExchangeKeys();
             }
             catch (Exception)
             {
