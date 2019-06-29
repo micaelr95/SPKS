@@ -183,7 +183,7 @@ namespace Cliente
 
             try
             {
-                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, publicKey);
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, GeraHash(publicKey) + " " + publicKey);
                 networkStream.Write(packet, 0, packet.Length);
             }
             catch(Exception)

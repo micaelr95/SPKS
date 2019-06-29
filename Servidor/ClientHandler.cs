@@ -207,39 +207,49 @@ namespace Servidor
                                 return;
                             }
 
-                            // Cria uma chave simétrica
-                            aes = new AesCryptoServiceProvider();
+                            string hash = pk.Substring(0, pk.IndexOf(" "));
+                            pk = pk.Substring(pk.IndexOf(" ") + 1);
 
-                            // Guarda a chave simetrica
-                            key = aes.Key;
-                            iv = aes.IV;
-
-                            // Cria chave publica do cliente para poder encriptar
-                            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                            rsa.FromXmlString(pk);
-
-                            // Cria um array com as duas keys
-                            byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
-
-                            // Encripta a key e o iv
-                            byte[] keyEnc = rsa.Encrypt(keys, true);
-
-                            try
+                            if (Common.ValidacaoDados(pk, hash))
                             {
-                                // Envia a key
-                                byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
-                                networkStream.Write(keyPacket, 0, keyPacket.Length);
+                                // Cria uma chave simétrica
+                                aes = new AesCryptoServiceProvider();
 
-                                // Envia o ACK para o cliente
-                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                networkStream.Write(ack, 0, ack.Length);
+                                // Guarda a chave simetrica
+                                key = aes.Key;
+                                iv = aes.IV;
+
+                                // Cria chave publica do cliente para poder encriptar
+                                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                                rsa.FromXmlString(pk);
+
+                                // Cria um array com as duas keys
+                                byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
+
+                                // Encripta a key e o iv
+                                byte[] keyEnc = rsa.Encrypt(keys, true);
+
+                                try
+                                {
+                                    // Envia a key
+                                    byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
+                                    networkStream.Write(keyPacket, 0, keyPacket.Length);
+
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
+                                Console.WriteLine("Hash não é igual");
                             }
-
+                            
                         } break;
                     case ProtocolSICmdType.USER_OPTION_3:
                         {
