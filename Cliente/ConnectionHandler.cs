@@ -68,10 +68,48 @@ namespace Cliente
                 byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
                 networkStream.Write(packet, 0, packet.Length);
 
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+
+                int state = -1;
+
                 // Enquanto nao receber um ACK recebe o que o servidor envia
                 while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
                 {
-                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_3)
+                    {
+                        byte[] receivedData = protocolSI.GetData();
+
+                        // Cria o array para guardar a mensagem decifrada
+                        byte[] msgDecifradaBytes = new byte[receivedData.Length];
+
+                        // Decifra a mensagem
+                        MemoryStream memoryStream = new MemoryStream(receivedData);
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                        // Guarda a mensagem decifrada
+                        state = int.Parse(Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos));
+
+                        networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    }
+                }
+
+                switch (state)
+                {
+                    // Faz login
+                    case 0:
+                        return true;
+                    // Password errada
+                    case 1:
+                        MessageBox.Show("Password errada");
+                        break;
+                    // Utilizador nao existe ou nome de utilizador errado
+                    case 2:
+                        MessageBox.Show("Utilizador nao existe");
+                        break;
+                    default:
+                        break;
                 }
             }
             catch (Exception)
