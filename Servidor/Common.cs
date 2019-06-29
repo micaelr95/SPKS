@@ -42,8 +42,8 @@ namespace Servidor
                 // Cria o hash
                 byte[] hashBytes = sha.ComputeHash(passwordByte);
 
-                // Converte o hash em hexadecimal e guarda na base de dados
-                hashedPassword = BitConverter.ToString(hashBytes);
+                // Guarda na base de dados
+                hashedPassword = Convert.ToBase64String(hashBytes);
             }
 
             return hashedPassword;
