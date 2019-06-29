@@ -18,7 +18,9 @@ namespace Servidor
 
         private TcpClient client;
         private int clientId;
+        User user;
         NetworkStream networkStream;
+        SPKSContainer spksContainer = new SPKSContainer();
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -84,25 +86,38 @@ namespace Servidor
 
                             CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
                             int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-                        
+
                             // Guarda a mensagem decifrada
-                            string msg = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-                            Console.WriteLine("    Cliente " + msg);
+                            string msgRecebida = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
 
-                            // Guarda os dados no ficheiro
-                            FileHandler.SaveData(msg);
+                            string hash = msgRecebida.Substring(0, msgRecebida.IndexOf(" "));
+                            msgRecebida = msgRecebida.Substring(msgRecebida.IndexOf(" ") + 1);
 
-                            try
+                            if(Common.ValidacaoDados(msgRecebida, hash))
                             {
-                                // Envia o ACK para o cliente
-                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                networkStream.Write(ack, 0, ack.Length);
+                                string msg = user.Username + ": " + msgRecebida;
+                                Console.WriteLine("    Cliente " + msg);
+
+                                // Guarda os dados no ficheiro
+                                FileHandler.SaveData(msg);
+
+                                try
+                                {
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch(Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
-                            catch(Exception ex)
+                            else
                             {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
+                                Console.WriteLine("Hash não é igual");
                             }
+
 
                         } break;
                     // Se for para fechar a comunicacao
@@ -145,7 +160,7 @@ namespace Servidor
                                     }
 
                                     // Converte a mensagem a enviar para bytes
-                                    byte[] messageBytes = Encoding.UTF8.GetBytes(stringChunk);
+                                    byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(stringChunk) + " " + stringChunk);
 
                                     byte[] msgCifrada;
 
@@ -206,65 +221,183 @@ namespace Servidor
                                 return;
                             }
 
-                            // Cria uma chave simétrica
-                            aes = new AesCryptoServiceProvider();
+                            string hash = pk.Substring(0, pk.IndexOf(" "));
+                            pk = pk.Substring(pk.IndexOf(" ") + 1);
 
-                            // Guarda a chave simetrica
-                            key = aes.Key;
-                            iv = aes.IV;
-
-                            // Cria chave publica do cliente para poder encriptar
-                            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                            rsa.FromXmlString(pk);
-
-                            // Cria um array com as duas keys
-                            byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
-
-                            // Encripta a key e o iv
-                            byte[] keyEnc = rsa.Encrypt(keys, true);
-
-                            try
+                            if (Common.ValidacaoDados(pk, hash))
                             {
-                                // Envia a key
-                                byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
-                                networkStream.Write(keyPacket, 0, keyPacket.Length);
+                                // Cria uma chave simétrica
+                                aes = new AesCryptoServiceProvider();
 
-                                // Envia o ACK para o cliente
-                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                networkStream.Write(ack, 0, ack.Length);
+                                // Guarda a chave simetrica
+                                key = aes.Key;
+                                iv = aes.IV;
+
+                                // Cria chave publica do cliente para poder encriptar
+                                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                                rsa.FromXmlString(pk);
+
+                                // Cria um array com as duas keys
+                                byte[] keys = Encoding.UTF8.GetBytes(Convert.ToBase64String(key) + " " + Convert.ToBase64String(iv));
+
+                                // Encripta a key e o iv
+                                byte[] keyEnc = rsa.Encrypt(keys, true);
+
+                                try
+                                {
+                                    // Envia a key
+                                    byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
+                                    networkStream.Write(keyPacket, 0, keyPacket.Length);
+
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
+                                Console.WriteLine("Hash não é igual");
                             }
-
+                            
                         } break;
-                    case ProtocolSICmdType.USER_OPTION_4:
+                    case ProtocolSICmdType.USER_OPTION_3:
                         {
-                            byte[] msgBytes = null;
+                            // Recebe os dados do cliente
+                            byte[] credenciaisBytes = protocolSI.GetData();
 
-                            try
-                            {
-                                msgBytes = protocolSI.GetData();
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
-                            }
+                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
 
-                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(msgBytes);
+                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
 
                             CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
 
-                            // Guarda a mensagem decifrada
-                            string jogada = clientId + ": " + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-                            Console.WriteLine("    Cliente jogou: " + jogada);
-                        } break;
+                            // Guarda as credenciais decifradas
+                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+
+                            string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+
+                            Console.WriteLine(username);
+                            Console.WriteLine(password);
+
+                            if (Common.ValidacaoDados(username + " " + password, hash))
+                            {
+                                // Verifica se o utilizador existe na base de dados
+                                User utilizador = (from User in spksContainer.Users
+                                                   where User.Username.Equals(username)
+                                                   select User).FirstOrDefault();
+
+                                int state;
+
+                                // Utilizador nao existe ou nome de utilizador errado
+                                if (utilizador == null)
+                                {
+                                    state = 2;
+                                }
+                                // Password errada
+                                else if (utilizador.Password != Common.HashPassword(password, utilizador.Salt))
+                                {
+                                    state = 1;
+                                }
+                                // Utilizador existe e passowrd está certa
+                                else
+                                {
+                                    user = utilizador;
+                                    state = 0;
+                                }
+
+                                string msg = Common.GeraHash(state.ToString()) + " " + state.ToString();
+
+                                // Converte a mensagem a enviar para bytes
+                                byte[] messageBytes = Encoding.UTF8.GetBytes(msg);
+
+                                byte[] msgCifrada;
+
+                                // Cifra a mensagem
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                    {
+                                        cs.Write(messageBytes, 0, messageBytes.Length);
+                                    }
+                                    // Guarda a mensagem cifrada
+                                    msgCifrada = ms.ToArray();
+                                }
+                                
+                                try
+                                {
+                                    // Envia a mensagem
+                                    byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
+                                    networkStream.Write(packet, 0, packet.Length);
+
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
+                        }
+                        break;
+                    // Cria conta
+                    case ProtocolSICmdType.USER_OPTION_4:
+                        {
+                            byte[] credenciaisBytes;
+                            try
+                            {
+                                // Recebe os dados do cliente
+                                credenciaisBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
+
+                            // Guarda as credenciais decifradas
+                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+
+                            string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+
+                            if (Common.ValidacaoDados(username + " " + password, hash))
+                            {
+                                User newUser = new User(username, password);
+                                spksContainer.Users.Add(newUser);
+                                spksContainer.SaveChanges();
+
+                                Console.WriteLine("Utilizador " + username + " criado");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }

@@ -41,7 +41,7 @@
             this.textBoxNome = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.textBoxIP = new System.Windows.Forms.TextBox();
             this.buttonCantoInferiorDireito = new System.Windows.Forms.Button();
             this.buttonCentroBaixo = new System.Windows.Forms.Button();
@@ -125,7 +125,7 @@
             this.groupBoxAutenticacao.Controls.Add(this.textBoxNome);
             this.groupBoxAutenticacao.Controls.Add(this.label4);
             this.groupBoxAutenticacao.Controls.Add(this.label1);
-            this.groupBoxAutenticacao.Controls.Add(this.textBox2);
+            this.groupBoxAutenticacao.Controls.Add(this.textBoxPassword);
             this.groupBoxAutenticacao.Controls.Add(this.textBoxIP);
             this.groupBoxAutenticacao.Location = new System.Drawing.Point(477, 15);
             this.groupBoxAutenticacao.Name = "groupBoxAutenticacao";
@@ -179,12 +179,13 @@
             this.label1.TabIndex = 30;
             this.label1.Text = "Nome:";
             // 
-            // textBox2
+            // textBoxPassword
             // 
-            this.textBox2.Location = new System.Drawing.Point(70, 72);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(168, 20);
-            this.textBox2.TabIndex = 33;
+            this.textBoxPassword.Location = new System.Drawing.Point(70, 72);
+            this.textBoxPassword.Name = "textBoxPassword";
+            this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
+            this.textBoxPassword.TabIndex = 33;
+            this.textBoxPassword.UseSystemPasswordChar = true;
             // 
             // textBoxIP
             // 
@@ -474,7 +475,7 @@
         private System.Windows.Forms.TextBox textBoxNome;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBoxPassword;
         private System.Windows.Forms.TextBox textBoxIP;
         private System.Windows.Forms.Button buttonCantoInferiorDireito;
         private System.Windows.Forms.Button buttonCentroBaixo;
