@@ -279,7 +279,15 @@ namespace Cliente
                         int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
 
                         // Guarda a mensagem decifrada
-                        msg = msg + Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                        string chunk = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+
+                        string hash = chunk.Substring(0, chunk.IndexOf(" "));
+                        chunk = chunk.Substring(chunk.IndexOf(" ") + 1);
+
+                        if(ValidacaoDados(chunk, hash))
+                        {
+                            msg += chunk;
+                        }
                     }
                 }
                 catch (Exception)

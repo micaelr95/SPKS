@@ -146,7 +146,7 @@ namespace Servidor
                                     }
 
                                     // Converte a mensagem a enviar para bytes
-                                    byte[] messageBytes = Encoding.UTF8.GetBytes(stringChunk);
+                                    byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(stringChunk) + " " + stringChunk);
 
                                     byte[] msgCifrada;
 
