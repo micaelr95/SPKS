@@ -149,7 +149,7 @@
             this.buttonEntrar.Location = new System.Drawing.Point(9, 98);
             this.buttonEntrar.Name = "buttonEntrar";
             this.buttonEntrar.Size = new System.Drawing.Size(231, 31);
-            this.buttonEntrar.TabIndex = 35;
+            this.buttonEntrar.TabIndex = 4;
             this.buttonEntrar.Text = "Autenticar";
             this.buttonEntrar.UseVisualStyleBackColor = true;
             this.buttonEntrar.Click += new System.EventHandler(this.buttonEntrar_Click);
@@ -159,7 +159,7 @@
             this.textBoxNome.Location = new System.Drawing.Point(70, 46);
             this.textBoxNome.Name = "textBoxNome";
             this.textBoxNome.Size = new System.Drawing.Size(168, 20);
-            this.textBoxNome.TabIndex = 29;
+            this.textBoxNome.TabIndex = 2;
             // 
             // label4
             // 
@@ -184,7 +184,7 @@
             this.textBoxPassword.Location = new System.Drawing.Point(70, 72);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
-            this.textBoxPassword.TabIndex = 33;
+            this.textBoxPassword.TabIndex = 3;
             this.textBoxPassword.UseSystemPasswordChar = true;
             // 
             // textBoxIP
@@ -192,7 +192,7 @@
             this.textBoxIP.Location = new System.Drawing.Point(70, 20);
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(168, 20);
-            this.textBoxIP.TabIndex = 31;
+            this.textBoxIP.TabIndex = 1;
             this.textBoxIP.Text = "localhost";
             // 
             // buttonCantoInferiorDireito

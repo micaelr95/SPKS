@@ -398,6 +398,53 @@ namespace Servidor
                             }
                         }
                         break;
+                    case ProtocolSICmdType.USER_OPTION_5:
+                        {
+                            byte[] msgBytes = null;
+
+                            try
+                            {
+                                msgBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                            string jogada = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            string hash = jogada.Substring(0, jogada.IndexOf(" "));
+                            jogada = jogada.Substring(jogada.IndexOf(" ") + 1);
+
+                            if (Common.ValidacaoDados(jogada, hash))
+                            {
+                                // Guarda a mensagem decifrada
+                                Console.WriteLine("    Cliente " + user.Username + " jogou: " + jogada);
+
+                                try
+                                {
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
+                            }                        
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
+                        }break;
                     default:
                         break;
                 }
