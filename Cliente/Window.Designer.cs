@@ -36,6 +36,8 @@
             this.TextBoxMensagemEnviar = new System.Windows.Forms.TextBox();
             this.buttonEnviar = new System.Windows.Forms.Button();
             this.groupBoxAutenticacao = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBoxSala = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonEntrar = new System.Windows.Forms.Button();
             this.textBoxNome = new System.Windows.Forms.TextBox();
@@ -120,6 +122,8 @@
             // 
             // groupBoxAutenticacao
             // 
+            this.groupBoxAutenticacao.Controls.Add(this.label2);
+            this.groupBoxAutenticacao.Controls.Add(this.textBoxSala);
             this.groupBoxAutenticacao.Controls.Add(this.label3);
             this.groupBoxAutenticacao.Controls.Add(this.buttonEntrar);
             this.groupBoxAutenticacao.Controls.Add(this.textBoxNome);
@@ -130,10 +134,26 @@
             this.groupBoxAutenticacao.Location = new System.Drawing.Point(477, 15);
             this.groupBoxAutenticacao.Name = "groupBoxAutenticacao";
             this.groupBoxAutenticacao.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.groupBoxAutenticacao.Size = new System.Drawing.Size(248, 135);
+            this.groupBoxAutenticacao.Size = new System.Drawing.Size(248, 157);
             this.groupBoxAutenticacao.TabIndex = 57;
             this.groupBoxAutenticacao.TabStop = false;
             this.groupBoxAutenticacao.Text = "Autenticação";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(33, 49);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(31, 13);
+            this.label2.TabIndex = 36;
+            this.label2.Text = "Sala:";
+            // 
+            // textBoxSala
+            // 
+            this.textBoxSala.Location = new System.Drawing.Point(70, 46);
+            this.textBoxSala.Name = "textBoxSala";
+            this.textBoxSala.Size = new System.Drawing.Size(168, 20);
+            this.textBoxSala.TabIndex = 35;
             // 
             // label3
             // 
@@ -146,9 +166,9 @@
             // 
             // buttonEntrar
             // 
-            this.buttonEntrar.Location = new System.Drawing.Point(9, 98);
+            this.buttonEntrar.Location = new System.Drawing.Point(7, 124);
             this.buttonEntrar.Name = "buttonEntrar";
-            this.buttonEntrar.Size = new System.Drawing.Size(231, 31);
+            this.buttonEntrar.Size = new System.Drawing.Size(231, 25);
             this.buttonEntrar.TabIndex = 4;
             this.buttonEntrar.Text = "Autenticar";
             this.buttonEntrar.UseVisualStyleBackColor = true;
@@ -156,7 +176,7 @@
             // 
             // textBoxNome
             // 
-            this.textBoxNome.Location = new System.Drawing.Point(70, 46);
+            this.textBoxNome.Location = new System.Drawing.Point(70, 72);
             this.textBoxNome.Name = "textBoxNome";
             this.textBoxNome.Size = new System.Drawing.Size(168, 20);
             this.textBoxNome.TabIndex = 2;
@@ -164,7 +184,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 75);
+            this.label4.Location = new System.Drawing.Point(8, 101);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 34;
@@ -173,7 +193,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 49);
+            this.label1.Location = new System.Drawing.Point(26, 75);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 30;
@@ -181,7 +201,7 @@
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Location = new System.Drawing.Point(70, 72);
+            this.textBoxPassword.Location = new System.Drawing.Point(70, 98);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
             this.textBoxPassword.TabIndex = 3;
@@ -499,6 +519,8 @@
         private System.Windows.Forms.GroupBox groupBoxJogo;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStatus;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBoxSala;
     }
 }
 

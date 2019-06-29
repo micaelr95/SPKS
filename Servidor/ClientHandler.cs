@@ -445,6 +445,68 @@ namespace Servidor
                                 Console.WriteLine("Hash não é igual");
                             }
                         }break;
+                    // Adiciona o jogador a sala
+                    case ProtocolSICmdType.USER_OPTION_6:
+                        {
+                            byte[] msgBytes = null;
+
+                            try
+                            {
+                                msgBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                            // Guarda a mensagem decifrada
+                            string sala = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+
+                            string hash = sala.Substring(0, sala.IndexOf(" "));
+                            sala = sala.Substring(sala.IndexOf(" ") + 1);
+
+                            if (Common.ValidacaoDados(sala, hash))
+                            {
+                                // Verifica se o utilizador existe na base de dados
+                                //Room room = (from Room in spksContainer.Rooms
+                                //                   where Room.Name.Equals(sala)
+                                //                   select Room).FirstOrDefault();
+
+                                //// Verifica se a sala existe
+                                //if (room == null)
+                                //{
+                                //    // Cria a sala
+                                //    Room newRoom = new Room(sala, user.Username);
+                                //    spksContainer.Rooms.Add(newRoom);
+                                //    spksContainer.SaveChanges();
+                                //}
+
+                                try
+                                {
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }

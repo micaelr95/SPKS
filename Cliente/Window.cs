@@ -74,6 +74,9 @@ namespace Cliente
 
                 if (isLogedin)
                 {
+                    // Entra na sala
+                    connectionHandler.Send(textBoxSala.Text, EI.SI.ProtocolSICmdType.USER_OPTION_6);
+
                     toolStripStatusLabelStatus.Text = "Conectado";
                 
                     uiThread = new Thread(UIThread);
