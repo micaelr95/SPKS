@@ -49,6 +49,11 @@ namespace Servidor
             return hashedPassword;
         }
 
+        /// <summary>
+        /// Gera a hash para os dados fornecidos
+        /// </summary>
+        /// <param name="Dados"></param>
+        /// <returns></returns>
         public static string GeraHash(string Dados)
         {
             string hash;
@@ -61,11 +66,17 @@ namespace Servidor
                 byte[] hashBytes = sha.ComputeHash(data);
 
                 // Converte o hash em hexadecimal
-                hash = BitConverter.ToString(hashBytes);
+                hash = Convert.ToBase64String(hashBytes);
             }
             return hash;
         }
 
+        /// <summary>
+        /// Verifica se os dados fornecidos produzem a mesma hash
+        /// </summary>
+        /// <param name="Dados"></param>
+        /// <param name="HashDados"></param>
+        /// <returns></returns>
         public static bool ValidacaoDados(string Dados, string HashDados)
         {
             

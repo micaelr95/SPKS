@@ -48,8 +48,10 @@ namespace Cliente
 
         public bool Login(string username, string password)
         {
+            string credenciais = username + " " + password;
+
             // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(username + " " + password);
+            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(credenciais) + " " + credenciais);
 
             byte[] msgCifrada;
 
@@ -339,7 +341,7 @@ namespace Cliente
                 byte[] hashBytes = sha.ComputeHash(data);
 
                 // Converte o hash em hexadecimal
-                hash = BitConverter.ToString(hashBytes);
+                hash = Convert.ToBase64String(hashBytes);
             }
             return hash;
         }

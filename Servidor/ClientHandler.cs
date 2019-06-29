@@ -256,67 +256,73 @@ namespace Servidor
                             // Guarda as credenciais decifradas
                             string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
 
-                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+                            int pos = credenciais.IndexOf(" ");
+                            string username = credenciais.Substring(0, pos);
                             string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
 
                             Console.WriteLine(username);
                             Console.WriteLine(password);
 
-                            // Verifica se o utilizador existe na base de dados
-                            User utilizador = (from User in spksContainer.Users
-                                               where User.Username.Equals(username)
-                                               select User).FirstOrDefault();
-
-                            int state;
-
-                            // Utilizador nao existe ou nome de utilizador errado
-                            if (utilizador == null)
+                            if (Common.ValidacaoDados(username + " " + password, hash))
                             {
-                                state = 2;
-                            }
-                            // Password errada
-                            else if (utilizador.Password != Common.HashPassword(password, utilizador.Salt))
-                            {
-                                state = 1;
-                            }
-                            // Utilizador existe e passowrd está certa
-                            else
-                            {
-                                state = 0;
-                            }
+                                // Verifica se o utilizador existe na base de dados
+                                User utilizador = (from User in spksContainer.Users
+                                                   where User.Username.Equals(username)
+                                                   select User).FirstOrDefault();
 
-                            // Converte a mensagem a enviar para bytes
-                            byte[] messageBytes = Encoding.UTF8.GetBytes(state.ToString());
+                                int state;
 
-                            byte[] msgCifrada;
-
-                            // Cifra a mensagem
-                            using (MemoryStream ms = new MemoryStream())
-                            {
-                                using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                // Utilizador nao existe ou nome de utilizador errado
+                                if (utilizador == null)
                                 {
-                                    cs.Write(messageBytes, 0, messageBytes.Length);
+                                    state = 2;
                                 }
-                                // Guarda a mensagem cifrada
-                                msgCifrada = ms.ToArray();
-                            }
+                                // Password errada
+                                else if (utilizador.Password != Common.HashPassword(password, utilizador.Salt))
+                                {
+                                    state = 1;
+                                }
+                                // Utilizador existe e passowrd está certa
+                                else
+                                {
+                                    state = 0;
+                                }
 
-                            Thread.Sleep(100);
+                                // Converte a mensagem a enviar para bytes
+                                byte[] messageBytes = Encoding.UTF8.GetBytes(state.ToString());
 
-                            try
-                            {
-                                // Envia a mensagem
-                                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
-                                networkStream.Write(packet, 0, packet.Length);
+                                byte[] msgCifrada;
 
-                                // Envia o ACK para o cliente
-                                ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                networkStream.Write(ack, 0, ack.Length);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Erro: " + ex);
-                                return;
+                                // Cifra a mensagem
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                    {
+                                        cs.Write(messageBytes, 0, messageBytes.Length);
+                                    }
+                                    // Guarda a mensagem cifrada
+                                    msgCifrada = ms.ToArray();
+                                }
+
+                                Thread.Sleep(100);
+
+                                try
+                                {
+                                    // Envia a mensagem
+                                    byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
+                                    networkStream.Write(packet, 0, packet.Length);
+
+                                    // Envia o ACK para o cliente
+                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                                    networkStream.Write(ack, 0, ack.Length);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Erro: " + ex);
+                                    return;
+                                }
                             }
                         }
                         break;
