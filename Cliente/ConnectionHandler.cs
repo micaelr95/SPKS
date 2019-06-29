@@ -106,7 +106,13 @@ namespace Cliente
                         break;
                     // Utilizador nao existe ou nome de utilizador errado
                     case 2:
-                        MessageBox.Show("Utilizador nao existe");
+                        DialogResult resposta = MessageBox.Show("Deseja criar uma conta nova?", "Conta nao existe", MessageBoxButtons.YesNo);
+                        if (resposta == DialogResult.Yes)
+                        {
+                            // Envia os dados para o servidor
+                            byte[] response = protocolSI.Make(ProtocolSICmdType.USER_OPTION_4, msgCifrada);
+                            networkStream.Write(response, 0, response.Length);
+                        }
                         break;
                     default:
                         break;

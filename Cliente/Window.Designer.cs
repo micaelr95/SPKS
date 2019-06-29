@@ -185,6 +185,7 @@
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
             this.textBoxPassword.TabIndex = 33;
+            this.textBoxPassword.UseSystemPasswordChar = true;
             // 
             // textBoxIP
             // 

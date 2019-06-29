@@ -19,6 +19,7 @@ namespace Servidor
         private TcpClient client;
         private int clientId;
         NetworkStream networkStream;
+        SPKSContainer spksContainer = new SPKSContainer();
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -262,7 +263,6 @@ namespace Servidor
                             Console.WriteLine(password);
 
                             // Verifica se o utilizador existe na base de dados
-                            SPKSContainer spksContainer = new SPKSContainer();
                             User utilizador = (from User in spksContainer.Users
                                                where User.Username.Equals(username)
                                                select User).FirstOrDefault();
@@ -275,7 +275,7 @@ namespace Servidor
                                 state = 2;
                             }
                             // Password errada
-                            else if (utilizador.Password != password)
+                            else if (utilizador.Password != Common.HashPassword(password, utilizador.Salt))
                             {
                                 state = 1;
                             }
@@ -318,6 +318,41 @@ namespace Servidor
                                 Console.WriteLine("Erro: " + ex);
                                 return;
                             }
+                        }
+                        break;
+                    // Cria conta
+                    case ProtocolSICmdType.USER_OPTION_4:
+                        {
+                            byte[] credenciaisBytes;
+                            try
+                            {
+                                // Recebe os dados do cliente
+                                credenciaisBytes = protocolSI.GetData();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
+                            }
+
+                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
+
+                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
+
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
+
+                            // Guarda as credenciais decifradas
+                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+
+                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
+                            
+                            User newUser = new User(username, password);
+                            spksContainer.Users.Add(newUser);
+                            spksContainer.SaveChanges();
+
+                            Console.WriteLine("Utilizador " + username + " criado");
                         }
                         break;
                     default:

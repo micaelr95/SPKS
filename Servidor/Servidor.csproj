@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientHandler.cs" />
+    <Compile Include="Common.cs" />
     <Compile Include="FileHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,6 +75,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SPKS.edmx</DependentUpon>
     </Compile>
+    <Compile Include="User.created.cs" />
     <Compile Include="User.cs">
       <DependentUpon>SPKS.tt</DependentUpon>
     </Compile>
