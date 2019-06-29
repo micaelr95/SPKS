@@ -258,8 +258,7 @@ namespace Servidor
 
                             string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
                             credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
-                            int pos = credenciais.IndexOf(" ");
-                            string username = credenciais.Substring(0, pos);
+                            string username = credenciais.Substring(0, credenciais.IndexOf(" "));
                             string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
 
                             Console.WriteLine(username);
@@ -324,6 +323,10 @@ namespace Servidor
                                     return;
                                 }
                             }
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
                         }
                         break;
                     // Cria conta
@@ -351,14 +354,23 @@ namespace Servidor
                             // Guarda as credenciais decifradas
                             string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
 
+                            string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
+                            credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
                             string username = credenciais.Substring(0, credenciais.IndexOf(" "));
                             string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
-                            
-                            User newUser = new User(username, password);
-                            spksContainer.Users.Add(newUser);
-                            spksContainer.SaveChanges();
 
-                            Console.WriteLine("Utilizador " + username + " criado");
+                            if (Common.ValidacaoDados(username + " " + password, hash))
+                            {
+                                User newUser = new User(username, password);
+                                spksContainer.Users.Add(newUser);
+                                spksContainer.SaveChanges();
+
+                                Console.WriteLine("Utilizador " + username + " criado");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Hash não é igual");
+                            }
                         }
                         break;
                     default:
