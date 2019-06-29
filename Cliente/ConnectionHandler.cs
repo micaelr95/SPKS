@@ -326,5 +326,32 @@ namespace Cliente
                 return;
             }
         }
+
+        public string GeraHash(string Dados)
+        {
+            string hash;
+            using (SHA512 sha = SHA512.Create())
+            {
+                // Converte os dados para byte
+                byte[] data = Encoding.UTF8.GetBytes(Dados);
+
+                // Cria o hash
+                byte[] hashBytes = sha.ComputeHash(data);
+
+                // Converte o hash em hexadecimal
+                hash = BitConverter.ToString(hashBytes);
+            }
+            return hash;
+        }
+
+        public bool ValidacaoDados(string Dados, string HashDados)
+        {
+            
+            if (GeraHash(Dados) != HashDados)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
