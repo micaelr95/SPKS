@@ -337,9 +337,9 @@ namespace Cliente
 
             for (int i = 0; i < count; i++)
             {
-                    pos = msg.IndexOf(";") + 1;
+                    pos = msg.IndexOf(";");
                     string chunk = msg.Substring(0, pos);
-                    msg = msg.Substring(pos);
+                    msg = msg.Substring(pos + 1);
                     msgs.Add(chunk);
             }
             
