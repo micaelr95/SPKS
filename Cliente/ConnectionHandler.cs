@@ -302,31 +302,45 @@ namespace Cliente
             // Limpa as mensagem
             msgs.Clear();
 
+
+            /////////////////////////////////////////////////////////////
             // Tamanho da resposta
-            int stringLenght = msg.Length;
+            //int stringLenght = msg.Length;
 
-            int chunksize = msg.IndexOf(";");
+            //int chunksize = msg.IndexOf(";");
 
-            string stringChunk = "";
+            //string stringChunk = "";
 
-            for (int i = 0; i < msg.Length; i += chunksize)
+            //for (int i = 0; i < msg.Length; i += chunksize)
+            //{
+            //    chunksize = msg.IndexOf(";", chunksize + 1);
+
+            //    if (chunksize > stringLenght)
+            //    {
+            //        stringChunk = msg.Substring(i);
+            //    }
+            //    else
+            //    {
+            //        stringLenght -= chunksize;
+            //        stringChunk = msg.Substring(i, chunksize);
+            //    }
+
+            //    Console.WriteLine("Mensagem: " + stringChunk + 1);
+
+            //    // Adiciona a mensagem recebida à caixa de mensagens
+            //    msgs.Add(stringChunk);
+            //}
+            /////////////////////////////////////////////////////////////
+            int pos = 0;
+
+            int count = msg.Count(f => f == ';');
+
+            for (int i = 0; i < count; i++)
             {
-                chunksize = msg.IndexOf(";", chunksize + 1);
-
-                if (chunksize > stringLenght)
-                {
-                    stringChunk = msg.Substring(i);
-                }
-                else
-                {
-                    stringLenght -= chunksize;
-                    stringChunk = msg.Substring(i, chunksize);
-                }
-
-                Console.WriteLine("Mensagem: " + stringChunk + 1);
-
-                // Adiciona a mensagem recebida à caixa de mensagens
-                msgs.Add(stringChunk);
+                    pos = msg.IndexOf(";") + 1;
+                    string chunk = msg.Substring(0, pos);
+                    msg = msg.Substring(pos);
+                    msgs.Add(chunk);
             }
             
             Window.timerEnable = false;
