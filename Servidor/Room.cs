@@ -34,6 +34,11 @@ namespace Servidor
             this.gameState = State.Waiting;
         }
 
+        public State GetGameState()
+        {
+            return gameState;
+        }
+
         public override string ToString()
         {
             return roomName;

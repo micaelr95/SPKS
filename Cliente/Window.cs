@@ -44,6 +44,11 @@ namespace Cliente
                 {
                     listBoxChat.DataSource = null;
                     listBoxChat.DataSource = ConnectionHandler.msgs;
+                    labelPlayer1Name.Text = ConnectionHandler.player1Name;
+                    if (ConnectionHandler.gameState != "Waiting")
+                    {
+                        groupBoxJogo.Enabled = true;
+                    }
                 });
                 Thread.Sleep(1000);
             }
@@ -75,7 +80,7 @@ namespace Cliente
                 if (isLogedin)
                 {
                     // Entra na sala
-                    connectionHandler.Send(textBoxSala.Text, EI.SI.ProtocolSICmdType.USER_OPTION_6);
+                    connectionHandler.JoinRoom(textBoxSala.Text);
 
                     toolStripStatusLabelStatus.Text = "Conectado";
                 
@@ -85,7 +90,7 @@ namespace Cliente
 
                     groupBoxAutenticacao.Enabled = false;
                     groupBoxChat.Enabled = true;
-                    groupBoxJogo.Enabled = true;
+                    groupBoxJogo.Enabled = false;
                 }
             }
         }

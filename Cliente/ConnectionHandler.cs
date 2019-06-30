@@ -24,6 +24,9 @@ namespace Cliente
         static AesCryptoServiceProvider aes;
 
         public static List<string> msgs = new List<string>();
+        public static string player1Name;
+        public static string player2Name;
+        public static string gameState;
 
         public void ConnectToServer(string ip)
         {
@@ -297,8 +300,6 @@ namespace Cliente
 
             }
 
-            Console.WriteLine("Mensagem Recebida: " + msg);
-
             // Limpa as mensagem
             msgs.Clear();
 
@@ -388,6 +389,79 @@ namespace Cliente
                 return false;
             }
             return true;
+        }
+
+        public void JoinRoom(string roomName)
+        {
+            // Converte a mensagem a enviar para bytes
+            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(roomName) + " " + roomName);
+
+            byte[] msgCifrada;
+
+            // Cifra a mensagem
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(msgBytes, 0, msgBytes.Length);
+                }
+                // Guarda a mensagem cifrada
+                msgCifrada = memoryStream.ToArray();
+            }
+
+            try
+            {
+                // Envia os dados para o servidor
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
+                networkStream.Write(packet, 0, packet.Length);
+
+                string msg = "";
+
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+
+                // Enquanto nao receber um ACK recebe o que o servidor envia
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                {
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_6)
+                    {
+                        byte[] receivedData = protocolSI.GetData();
+
+                        // Cria o array para guardar a mensagem decifrada
+                        byte[] msgDecifradaBytes = new byte[receivedData.Length];
+
+                        // Decifra a mensagem
+                        MemoryStream memoryStream = new MemoryStream(receivedData);
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+                        // Guarda a mensagem decifrada
+                        msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+
+                        networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    }
+                }
+
+                Console.WriteLine(msg);
+
+                string hash = msg.Substring(0, msg.IndexOf(" "));
+                msg = msg.Substring(msg.IndexOf(" ") + 1);
+                string nome = msg.Substring(0, msg.IndexOf(" "));
+                string state = msg.Substring(msg.IndexOf(" ") + 1);
+
+                if (ValidacaoDados(msg, hash))
+                {
+                    player1Name = nome;
+                    gameState = state;
+                }
+                else
+                {
+                    Console.WriteLine("Hash não é igual");
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
     }
 }

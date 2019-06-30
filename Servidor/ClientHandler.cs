@@ -21,6 +21,7 @@ namespace Servidor
         User user;
         NetworkStream networkStream;
         SPKSContainer spksContainer = new SPKSContainer();
+        ProtocolSI protocolSI;
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -44,7 +45,7 @@ namespace Servidor
         {
             networkStream = client.GetStream();
 
-            ProtocolSI protocolSI = new ProtocolSI();
+            protocolSI = new ProtocolSI();
 
             // Repete ate receber a mensagem de fim de transmissao
             while (protocolSI.GetCmdType() != ProtocolSICmdType.EOT)
@@ -93,7 +94,7 @@ namespace Servidor
                             string hash = msgRecebida.Substring(0, msgRecebida.IndexOf(" "));
                             msgRecebida = msgRecebida.Substring(msgRecebida.IndexOf(" ") + 1);
 
-                            if(Common.ValidacaoDados(msgRecebida, hash))
+                            if (Common.ValidacaoDados(msgRecebida, hash))
                             {
                                 string msg = user.Username + ": " + msgRecebida;
                                 Console.WriteLine("    Cliente " + msg);
@@ -107,7 +108,7 @@ namespace Servidor
                                     ack = protocolSI.Make(ProtocolSICmdType.ACK);
                                     networkStream.Write(ack, 0, ack.Length);
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     Console.WriteLine("Erro: " + ex);
                                     return;
@@ -263,7 +264,7 @@ namespace Servidor
                             {
                                 Console.WriteLine("Hash não é igual");
                             }
-                            
+
                         } break;
                     case ProtocolSICmdType.USER_OPTION_3:
                         {
@@ -331,7 +332,7 @@ namespace Servidor
                                     // Guarda a mensagem cifrada
                                     msgCifrada = ms.ToArray();
                                 }
-                                
+
                                 try
                                 {
                                     // Envia a mensagem
@@ -439,12 +440,12 @@ namespace Servidor
                                     Console.WriteLine("Erro: " + ex);
                                     return;
                                 }
-                            }                        
+                            }
                             else
                             {
                                 Console.WriteLine("Hash não é igual");
                             }
-                        }break;
+                        } break;
                     // Adiciona o jogador a sala
                     case ProtocolSICmdType.USER_OPTION_6:
                         {
@@ -475,11 +476,20 @@ namespace Servidor
 
                             if (Common.ValidacaoDados(sala, hash))
                             {
-                                // Verifica se a sala existe
+                                // Verifica existem salas
                                 if (Game.rooms.Count == 0)
                                 {
+                                    // Cria a sala
                                     Room newRoom = new Room(sala, user);
                                     Game.rooms.Add(newRoom);
+
+                                    // Envia os dados da sala para o jogador
+                                    string dadosSala = user.Username + " " + newRoom.GetGameState();
+
+                                    // Cifra a mensagem
+                                    byte[] msgCifrada = Cifra(dadosSala);
+
+                                    Send(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
                                 }
                                 else
                                 {
@@ -525,6 +535,56 @@ namespace Servidor
             client.Close();
 
             Console.WriteLine("O Cliente {0} desconnectou-se", clientId);
+        }
+
+        /// <summary>
+        /// Cifra as mensagens
+        /// </summary>
+        /// <param name="mensagem"></param>
+        /// <returns></returns>
+        private byte[] Cifra(string mensagem)
+        {
+            // Converte a mensagem a enviar para bytes
+            byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(mensagem) + " " + mensagem);
+
+            byte[] msgCifrada;
+
+            // Cifra a mensagem
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                {
+                    cs.Write(messageBytes, 0, messageBytes.Length);
+                }
+                // Guarda a mensagem cifrada
+                msgCifrada = ms.ToArray();
+            }
+
+            return msgCifrada;
+        }
+
+        /// <summary>
+        /// Envia a mensagem para o cliente
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="mensagem"></param>
+        private void Send(ProtocolSICmdType type, byte[] mensagem)
+        {
+            try
+            {
+                // Envia a mensagem
+                byte[] packet = protocolSI.Make(type, mensagem);
+                networkStream.Write(packet, 0, packet.Length);
+
+                // Envia o ACK para o cliente
+                byte[] ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                networkStream.Write(ack, 0, ack.Length);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro: " + ex);
+                return;
+            }
         }
     }
 }
