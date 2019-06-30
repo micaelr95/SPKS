@@ -484,12 +484,28 @@ namespace Servidor
                                     Game.rooms.Add(newRoom);
 
                                     // Envia os dados da sala para o jogador
-                                    string dadosSala = user.Username + " " + newRoom.GetGameState();
+                                    string dadosSala = newRoom.GetPlayer1Name() + " " + newRoom.GetGameState();
 
                                     // Cifra a mensagem
                                     byte[] msgCifrada = Cifra(dadosSala);
 
                                     Send(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
+
+                                    while (true)
+                                    {
+                                        if (newRoom.GetPlayer2Name() != null)
+                                        {
+                                            // Envia os dados da sala para o jogador
+                                            dadosSala = newRoom.GetPlayer1Name() + " " + newRoom.GetPlayer2Name() + " " + newRoom.GetGameState();
+
+                                            // Cifra a mensagem
+                                            byte[] msg = Cifra(dadosSala);
+
+                                            Send(ProtocolSICmdType.USER_OPTION_7, msg);
+
+                                            break;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -498,6 +514,14 @@ namespace Servidor
                                         if (room.ToString() == sala)
                                         {
                                             room.AddPlayer2(user);
+
+                                            // Envia os dados da sala para o jogador
+                                            string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GetGameState();
+
+                                            // Cifra a mensagem
+                                            byte[] msgCifrada = Cifra(dadosSala);
+
+                                            Send(ProtocolSICmdType.USER_OPTION_7, msgCifrada);
                                         }
                                         else
                                         {
@@ -505,18 +529,6 @@ namespace Servidor
                                             Game.rooms.Add(newRoom);
                                         }
                                     }
-                                }
-
-                                try
-                                {
-                                    // Envia o ACK para o cliente
-                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                    networkStream.Write(ack, 0, ack.Length);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("Erro: " + ex);
-                                    return;
                                 }
                             }
                             else

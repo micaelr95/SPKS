@@ -45,8 +45,11 @@ namespace Cliente
                     listBoxChat.DataSource = null;
                     listBoxChat.DataSource = ConnectionHandler.msgs;
                     labelPlayer1Name.Text = ConnectionHandler.player1Name;
+                    labelPlayer2Name.Text = ConnectionHandler.player2Name;
                     if (ConnectionHandler.gameState != "Waiting")
                     {
+                        timer1.Enabled = true;
+                        groupBoxChat.Enabled = true;
                         groupBoxJogo.Enabled = true;
                     }
                 });
@@ -86,10 +89,11 @@ namespace Cliente
                 
                     uiThread = new Thread(UIThread);
                     uiThread.Start();
-                    timer1.Enabled = true;
+                    // Inicia o chat
+                    timer1.Enabled = false;
 
                     groupBoxAutenticacao.Enabled = false;
-                    groupBoxChat.Enabled = true;
+                    groupBoxChat.Enabled = false;
                     groupBoxJogo.Enabled = false;
                 }
             }

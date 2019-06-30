@@ -57,5 +57,15 @@ namespace Servidor
             this.player2 = player2;
             gameState = State.Player1Turn;
         }
+
+        public string GetPlayer1Name()
+        {
+            return player1.Username;
+        }
+
+        public string GetPlayer2Name()
+        {
+            return player2.Username;
+        }
     }
 }

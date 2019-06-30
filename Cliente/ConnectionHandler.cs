@@ -303,35 +303,6 @@ namespace Cliente
             // Limpa as mensagem
             msgs.Clear();
 
-
-            /////////////////////////////////////////////////////////////
-            // Tamanho da resposta
-            //int stringLenght = msg.Length;
-
-            //int chunksize = msg.IndexOf(";");
-
-            //string stringChunk = "";
-
-            //for (int i = 0; i < msg.Length; i += chunksize)
-            //{
-            //    chunksize = msg.IndexOf(";", chunksize + 1);
-
-            //    if (chunksize > stringLenght)
-            //    {
-            //        stringChunk = msg.Substring(i);
-            //    }
-            //    else
-            //    {
-            //        stringLenght -= chunksize;
-            //        stringChunk = msg.Substring(i, chunksize);
-            //    }
-
-            //    Console.WriteLine("Mensagem: " + stringChunk + 1);
-
-            //    // Adiciona a mensagem recebida à caixa de mensagens
-            //    msgs.Add(stringChunk);
-            //}
-            /////////////////////////////////////////////////////////////
             int pos = 0;
 
             int count = msg.Count(f => f == ';');
@@ -393,8 +364,101 @@ namespace Cliente
 
         public void JoinRoom(string roomName)
         {
+            Thread thread = new Thread(() => JoinRoomThread(roomName));
+            thread.Start();
+        }
+
+        public void JoinRoomThread(string roomName)
+        {
+            // Mensagem a enviar
+            string msgEnviar = GeraHash(roomName) + " " + roomName;
+            byte[] msgCifrada = Cifra(msgEnviar);
+
+            try
+            {
+                // Envia os dados para o servidor
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
+                networkStream.Write(packet, 0, packet.Length);
+
+                string msg = "";
+
+                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+
+                // Enquanto nao receber um ACK recebe o que o servidor envia
+                while (true)
+                {
+                    if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_6)
+                    {
+                        byte[] receivedData = protocolSI.GetData();
+                        msg = Decifra(receivedData);
+                        
+                        string hash = msg.Substring(0, msg.IndexOf(" "));
+                        msg = msg.Substring(msg.IndexOf(" ") + 1);
+                        string nome = msg.Substring(0, msg.IndexOf(" "));
+                        string state = msg.Substring(msg.IndexOf(" ") + 1);
+
+                        if (ValidacaoDados(msg, hash))
+                        {
+                            player1Name = nome;
+                            gameState = state;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Hash não é igual");
+                        }
+
+                        // Enquanto nao receber um ACK recebe o que o servidor envia
+                        while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                        {
+                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                        }
+                    }
+                    else if(protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_7)
+                    {
+                        // Recebe a mensagem do servidor
+                        byte[] msgBytes = protocolSI.GetData();
+
+                        msg = Decifra(msgBytes);
+
+                        string hash = msg.Substring(0, msg.IndexOf(" "));
+                        msg = msg.Substring(msg.IndexOf(" ") + 1);
+
+                        if (ValidacaoDados(msg, hash))
+                        {
+                            string player1 = msg.Substring(0, msg.IndexOf(" "));
+                            msg = msg.Substring(msg.IndexOf(" ") + 1);
+                            string player2 = msg.Substring(0, msg.IndexOf(" "));
+                            string state = msg.Substring(msg.IndexOf(" ") + 1);
+                            player1Name = player1;
+                            player2Name = player2;
+                            gameState = state;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Hash não é igual");
+                        }
+
+                        // Enquanto nao receber um ACK recebe o que o servidor envia
+                        while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                        {
+                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                        }
+                        break;
+                    }
+
+                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        private static byte[] Cifra(string msg)
+        {
             // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(roomName) + " " + roomName);
+            byte[] msgBytes = Encoding.UTF8.GetBytes(msg);
 
             byte[] msgCifrada;
 
@@ -409,59 +473,21 @@ namespace Cliente
                 msgCifrada = memoryStream.ToArray();
             }
 
-            try
-            {
-                // Envia os dados para o servidor
-                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
-                networkStream.Write(packet, 0, packet.Length);
+            return msgCifrada;
+        }
 
-                string msg = "";
+        private static string Decifra(byte[] receivedData)
+        {
+            // Cria o array para guardar a mensagem decifrada
+            byte[] msgDecifradaBytes = new byte[receivedData.Length];
 
-                networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+            // Decifra a mensagem
+            MemoryStream memoryStream = new MemoryStream(receivedData);
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
 
-                // Enquanto nao receber um ACK recebe o que o servidor envia
-                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
-                {
-                    if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_6)
-                    {
-                        byte[] receivedData = protocolSI.GetData();
-
-                        // Cria o array para guardar a mensagem decifrada
-                        byte[] msgDecifradaBytes = new byte[receivedData.Length];
-
-                        // Decifra a mensagem
-                        MemoryStream memoryStream = new MemoryStream(receivedData);
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                        // Guarda a mensagem decifrada
-                        msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-
-                        networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-                    }
-                }
-
-                Console.WriteLine(msg);
-
-                string hash = msg.Substring(0, msg.IndexOf(" "));
-                msg = msg.Substring(msg.IndexOf(" ") + 1);
-                string nome = msg.Substring(0, msg.IndexOf(" "));
-                string state = msg.Substring(msg.IndexOf(" ") + 1);
-
-                if (ValidacaoDados(msg, hash))
-                {
-                    player1Name = nome;
-                    gameState = state;
-                }
-                else
-                {
-                    Console.WriteLine("Hash não é igual");
-                }
-            }
-            catch (Exception)
-            {
-                return;
-            }
+            // Guarda a mensagem decifrada
+            return Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
         }
     }
 }
