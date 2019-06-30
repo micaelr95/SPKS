@@ -13,7 +13,7 @@ namespace Servidor
         Waiting,
         Player1Turn,
         Player2Turn,
-        Finish
+        GameOver
     }
 
     class Room

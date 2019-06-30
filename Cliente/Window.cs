@@ -36,6 +36,26 @@ namespace Cliente
             }
         }
 
+        private void ButtonBola()
+        {
+            buttonCantoInferiorDireito.BackgroundImage = Cliente.Properties.Resources.Bola;
+            buttonCantoInferiorEsquerdo.BackgroundImage = Cliente.Properties.Resources.Bola;
+            buttonCantoSuperiorDireito.BackgroundImage = Cliente.Properties.Resources.Bola;
+            buttonCantoSuperiorEsquerdo.BackgroundImage = Cliente.Properties.Resources.Bola;
+            buttonCentroBaixo.BackgroundImage = Cliente.Properties.Resources.Bola;
+            buttonCentroCima.BackgroundImage = Cliente.Properties.Resources.Bola;
+        }
+
+        private void ButtonGuardaRedes()
+        {
+            buttonCantoInferiorDireito.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+            buttonCantoInferiorEsquerdo.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+            buttonCantoSuperiorDireito.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+            buttonCantoSuperiorEsquerdo.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+            buttonCentroBaixo.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+            buttonCentroCima.BackgroundImage = Cliente.Properties.Resources.GuardaRedes;
+        }
+
         private void UIThread()
         {
             while (true)
@@ -46,11 +66,53 @@ namespace Cliente
                     listBoxChat.DataSource = ConnectionHandler.msgs;
                     labelPlayer1Name.Text = ConnectionHandler.player1Name;
                     labelPlayer2Name.Text = ConnectionHandler.player2Name;
-                    if (ConnectionHandler.gameState != "Waiting")
+                    switch (ConnectionHandler.gameState)
                     {
-                        timer1.Enabled = true;
-                        groupBoxChat.Enabled = true;
-                        groupBoxJogo.Enabled = true;
+                        case "Waiting":
+                            {
+                                timer1.Enabled = false;
+                                groupBoxChat.Enabled = false;
+                                groupBoxJogo.Enabled = false;
+                            }
+                            break;
+                        case "Player1Turn":
+                            {
+                                timer1.Enabled = true;
+                                groupBoxChat.Enabled = true;
+                                groupBoxJogo.Enabled = true;
+                                if (ConnectionHandler.player1Name == textBoxNome.Text)
+                                {
+                                    ButtonBola();
+                                }
+                                else
+                                {
+                                    ButtonGuardaRedes();
+                                }
+                            }break;
+                        case "Player2Turn":
+                            {
+                                timer1.Enabled = true;
+                                groupBoxChat.Enabled = true;
+                                groupBoxJogo.Enabled = true;
+                                if (ConnectionHandler.player1Name == textBoxNome.Text)
+                                {
+                                    ButtonGuardaRedes();
+                                }
+                                else
+                                {
+                                    ButtonBola();
+                                }
+                            }
+                            break;
+                        case "GameOver":
+                            {
+                                timer1.Enabled = true;
+                                groupBoxChat.Enabled = true;
+                                groupBoxJogo.Enabled = false;
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 });
                 Thread.Sleep(1000);
