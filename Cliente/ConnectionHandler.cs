@@ -145,47 +145,18 @@ namespace Cliente
             return false;
         }
 
-        public void Send(string message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
+        public void Send(byte[] message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
         {
-            Thread thread = new Thread(() => SendThread(message, type));
-            thread.Start();
-        }
-
-        private void SendThread(string msg, ProtocolSICmdType type)
-        {
-            // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(msg) + " " + msg);
-            
-            byte[] msgCifrada;
-
-            // Cifra a mensagem
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                {
-                    cryptoStream.Write(msgBytes, 0, msgBytes.Length);
-                }
-                // Guarda a mensagem cifrada
-                msgCifrada = memoryStream.ToArray();
-            }
-           
             try
             {
                 // Envia os dados para o servidor
-                byte[] packet = protocolSI.Make(type, msgCifrada);
+                byte[] packet = protocolSI.Make(type, message);
                 networkStream.Write(packet, 0, packet.Length);
-
-                // Enquanto nao receber um ACK recebe o que o servidor envia
-                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
-                {
-                    networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-                }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return;
             }
-            
         }
 
         public void ExchangeKeys()
@@ -335,7 +306,7 @@ namespace Cliente
             }
         }
 
-        public string GeraHash(string Dados)
+        public static string GeraHash(string Dados)
         {
             string hash;
             using (SHA512 sha = SHA512.Create())
@@ -371,7 +342,7 @@ namespace Cliente
         public void JoinRoomThread(string roomName)
         {
             // Mensagem a enviar
-            string msgEnviar = GeraHash(roomName) + " " + roomName;
+            string msgEnviar = roomName;
             byte[] msgCifrada = Cifra(msgEnviar);
 
             try
@@ -458,7 +429,7 @@ namespace Cliente
         private static byte[] Cifra(string msg)
         {
             // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(msg);
+            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(msg) + " " + msg);
 
             byte[] msgCifrada;
 
@@ -488,6 +459,26 @@ namespace Cliente
 
             // Guarda a mensagem decifrada
             return Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+        }
+
+        /// <summary>
+        /// Envia mensagem do chat
+        /// </summary>
+        /// <param name="msg"></param>
+        public void SendMessage(string msg)
+        {
+            Send(Cifra(msg));
+        }
+
+        /// <summary>
+        /// Envia jogada
+        /// </summary>
+        /// <param name="linha"></param>
+        /// <param name="coluna"></param>
+        public void SendPlay(int linha, int coluna)
+        {
+            byte[] jogada = Cifra(linha.ToString() + " " + coluna.ToString());
+            Send(jogada, ProtocolSICmdType.USER_OPTION_5);
         }
     }
 }

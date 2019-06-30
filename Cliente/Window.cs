@@ -101,38 +101,38 @@ namespace Cliente
 
         private void buttonEnviar_Click_1(object sender, EventArgs e)
         {
-            connectionHandler.Send(TextBoxMensagemEnviar.Text);
+            connectionHandler.SendMessage(TextBoxMensagemEnviar.Text);
             TextBoxMensagemEnviar.Text = "";
         }
 
         private void buttonCantoInferiorDireito_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(2 + " " + 3, EI.SI.ProtocolSICmdType.USER_OPTION_5);
+            connectionHandler.SendPlay(2, 3);
         }
 
         private void buttonCantoSuperiorEsquerdo_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(1 + " " + 1, EI.SI.ProtocolSICmdType.USER_OPTION_5);
+            connectionHandler.SendPlay(1, 1);
         }
 
         private void buttonCentroCima_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(1 + " " + 2, EI.SI.ProtocolSICmdType.USER_OPTION_5);     
+            connectionHandler.SendPlay(1, 2);     
         }
 
         private void buttonCantoSuperiorDireito_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(1 + " " + 3, EI.SI.ProtocolSICmdType.USER_OPTION_5);
+            connectionHandler.SendPlay(1, 3);
         }
 
         private void buttonCentroBaixo_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(2 + " " + 2, EI.SI.ProtocolSICmdType.USER_OPTION_5);
+            connectionHandler.SendPlay(2, 2);
         }
 
         private void buttonCantoInferiorEsquerdo_Click(object sender, EventArgs e)
         {
-            connectionHandler.Send(2 + " " + 1, EI.SI.ProtocolSICmdType.USER_OPTION_5);
+            connectionHandler.SendPlay(2, 1);
         }
     }
 }
