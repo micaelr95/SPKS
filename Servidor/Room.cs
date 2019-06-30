@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Servidor
@@ -20,24 +21,25 @@ namespace Servidor
         private string roomName;
         private User player1;
         private User player2;
-        private int[] player1Play;
-        private int[] player2Play;
+        private string player1Play;
+        private string player2Play;
+        private int player1Pontos;
+        private int player2Pontos;
         private State gameState;
+
+        public string Player1Play { set => player1Play = value; }
+        public string Player2Play { set => player2Play = value; }
+        internal State GameState { get => gameState; }
 
         public Room(string roomName, User player1)
         {
             this.roomName = roomName;
             this.player1 = player1;
             this.player2 = new User();
-            this.player1Play = new int[2] { 0, 0 };
-            this.player2Play = new int[2] { 0, 0 };
+            this.player1Play = "";
+            this.player2Play = "";
             this.gameState = State.Waiting;
-        }
-
-        public State GetGameState()
-        {
-            return gameState;
-        }
+        }   
 
         public override string ToString()
         {
@@ -56,6 +58,7 @@ namespace Servidor
         {
             this.player2 = player2;
             gameState = State.Player1Turn;
+            new Thread(Loop).Start();
         }
 
         public string GetPlayer1Name()
@@ -66,6 +69,51 @@ namespace Servidor
         public string GetPlayer2Name()
         {
             return player2.Username;
+        }
+
+        /// <summary>
+        /// Verifica de quem é o ponto
+        /// </summary>
+        private void VerificaPonto()
+        {
+            if (GameState == State.Player1Turn && player1Play == player2Play)
+            {
+                player2Pontos += 1;
+                gameState = State.Player2Turn;
+            }
+            else if (GameState == State.Player2Turn && player1Play == player2Play)
+            {
+                player1Pontos += 1;
+                gameState = State.Player1Turn;
+            }
+            else if (GameState == State.Player1Turn && player1Play != player2Play)
+            {
+                player1Pontos += 1;
+                gameState = State.Player2Turn;
+            }
+            else if (GameState == State.Player2Turn && player1Play != player2Play)
+            {
+                player2Pontos += 1;
+                gameState = State.Player1Turn;
+            }
+        }
+
+        private void Loop()
+        {
+            while (true)
+            {
+                if(player1Play != "" && player2Play != "")
+                {
+                    VerificaPonto();
+                    player1Play = "";
+                    player2Play = "";
+                }
+            }
+        }
+
+        public void IniciaJogo()
+        {
+            
         }
     }
 }

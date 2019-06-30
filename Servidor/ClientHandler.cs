@@ -22,6 +22,7 @@ namespace Servidor
         NetworkStream networkStream;
         SPKSContainer spksContainer = new SPKSContainer();
         ProtocolSI protocolSI;
+        Room currentRoom;
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -429,6 +430,15 @@ namespace Servidor
                                 // Guarda a mensagem decifrada
                                 Console.WriteLine("    Cliente " + user.Username + " jogou: " + jogada);
 
+                                if (currentRoom.GetPlayer1Name() == user.Username)
+                                {
+                                    currentRoom.Player1Play = jogada;
+                                }
+                                else
+                                {
+                                    currentRoom.Player2Play = jogada;
+                                }
+
                                 try
                                 {
                                     // Envia o ACK para o cliente
@@ -480,11 +490,11 @@ namespace Servidor
                                 if (Game.rooms.Count == 0)
                                 {
                                     // Cria a sala
-                                    Room newRoom = new Room(sala, user);
-                                    Game.rooms.Add(newRoom);
+                                    currentRoom = new Room(sala, user);
+                                    Game.rooms.Add(currentRoom);
 
                                     // Envia os dados da sala para o jogador
-                                    string dadosSala = newRoom.GetPlayer1Name() + " " + newRoom.GetGameState();
+                                    string dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GameState;
 
                                     // Cifra a mensagem
                                     byte[] msgCifrada = Cifra(dadosSala);
@@ -493,10 +503,10 @@ namespace Servidor
 
                                     while (true)
                                     {
-                                        if (newRoom.GetPlayer2Name() != null)
+                                        if (currentRoom.GetPlayer2Name() != null)
                                         {
                                             // Envia os dados da sala para o jogador
-                                            dadosSala = newRoom.GetPlayer1Name() + " " + newRoom.GetPlayer2Name() + " " + newRoom.GetGameState();
+                                            dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GetPlayer2Name() + " " + currentRoom.GameState;
 
                                             // Cifra a mensagem
                                             byte[] msg = Cifra(dadosSala);
@@ -513,10 +523,11 @@ namespace Servidor
                                     {
                                         if (room.ToString() == sala)
                                         {
+                                            currentRoom = room;
                                             room.AddPlayer2(user);
 
                                             // Envia os dados da sala para o jogador
-                                            string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GetGameState();
+                                            string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GameState;
 
                                             // Cifra a mensagem
                                             byte[] msgCifrada = Cifra(dadosSala);
@@ -525,6 +536,7 @@ namespace Servidor
                                         }
                                         else
                                         {
+                                            // TODO
                                             Room newRoom = new Room(sala, user);
                                             Game.rooms.Add(newRoom);
                                         }
