@@ -263,6 +263,13 @@ namespace Cliente
                             msg += chunk;
                         }
                     }
+                    else if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_5)
+                    {
+                        // Recebe a mensagem do servidor
+                        byte[] msgBytes = protocolSI.GetData();
+
+                        string dados = Decifra(msgBytes);
+                    }
                 }
                 catch (Exception)
                 {

@@ -30,6 +30,8 @@ namespace Servidor
         public string Player1Play { set => player1Play = value; }
         public string Player2Play { set => player2Play = value; }
         internal State GameState { get => gameState; }
+        public int Player1Pontos { get => player1Pontos; }
+        public int Player2Pontos { get => player2Pontos; }
 
         public Room(string roomName, User player1)
         {

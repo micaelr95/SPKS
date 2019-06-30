@@ -23,6 +23,7 @@ namespace Servidor
         SPKSContainer spksContainer = new SPKSContainer();
         ProtocolSI protocolSI;
         Room currentRoom;
+        State lastState;
 
         // Cripto
         AesCryptoServiceProvider aes;
@@ -450,6 +451,16 @@ namespace Servidor
                                     Console.WriteLine("Erro: " + ex);
                                     return;
                                 }
+
+                                while (true)
+                                {
+                                    if (lastState != currentRoom.GameState)
+                                    {
+                                        string msg = currentRoom.Player1Pontos.ToString() + " " + currentRoom.Player2Pontos.ToString() + " " + currentRoom.GameState;
+                                        Send(ProtocolSICmdType.USER_OPTION_5, Cifra(msg));
+                                        break;
+                                    }
+                                }
                             }
                             else
                             {
@@ -505,6 +516,8 @@ namespace Servidor
                                     {
                                         if (currentRoom.GetPlayer2Name() != null)
                                         {
+                                            lastState = currentRoom.GameState;
+
                                             // Envia os dados da sala para o jogador
                                             dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GetPlayer2Name() + " " + currentRoom.GameState;
 
@@ -525,6 +538,7 @@ namespace Servidor
                                         {
                                             currentRoom = room;
                                             room.AddPlayer2(user);
+                                            lastState = currentRoom.GameState;
 
                                             // Envia os dados da sala para o jogador
                                             string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GameState;
