@@ -66,6 +66,10 @@ namespace Cliente
                     listBoxChat.DataSource = ConnectionHandler.msgs;
                     labelPlayer1Name.Text = ConnectionHandler.player1Name;
                     labelPlayer2Name.Text = ConnectionHandler.player2Name;
+                   
+                    labelPlayer1Ponto.Text = ConnectionHandler.player1Points.ToString();
+                    labelPlayer2Ponto.Text = ConnectionHandler.player2Points.ToString();
+
                     switch (ConnectionHandler.gameState)
                     {
                         case "Waiting":

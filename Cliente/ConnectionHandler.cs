@@ -26,6 +26,8 @@ namespace Cliente
         public static List<string> msgs = new List<string>();
         public static string player1Name;
         public static string player2Name;
+        public static int player1Points;
+        public static int player2Points;
         public static string gameState;
 
         public void ConnectToServer(string ip)
@@ -269,10 +271,31 @@ namespace Cliente
                         byte[] msgBytes = protocolSI.GetData();
 
                         string dados = Decifra(msgBytes);
+
+                        string hash = dados.Substring(0, dados.IndexOf(" "));
+                        dados = dados.Substring(dados.IndexOf(" ") + 1);
+
+                        if (ValidacaoDados(dados, hash))
+                        {
+                            string player1Point = dados.Substring(0, dados.IndexOf(" "));
+                            dados = dados.Substring(dados.IndexOf(" ") + 1);
+                            string player2Point = dados.Substring(0, dados.IndexOf(" "));
+                            string state = dados.Substring(dados.IndexOf(" ") + 1);
+
+                            player1Points = int.Parse(player1Point);
+                            player2Points = int.Parse(player2Point);
+                            gameState = state;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Hash inválida");
+                        }
+
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     return;
                 }
 
