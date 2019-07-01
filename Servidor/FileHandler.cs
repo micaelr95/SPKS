@@ -9,26 +9,24 @@ namespace Servidor
 {
     class FileHandler
     {
-        private const string fileName = "log.txt";
-
-        public static void SaveData(string msg)
+        public static void SaveData(string fileName, string msg)
         {
-            using (StreamWriter streamWriter = File.AppendText(fileName))
+            using (StreamWriter streamWriter = File.AppendText(fileName + ".txt"))
             {
                 streamWriter.Write(msg + ";");
             }
         }
 
-        public static string LoadData()
+        public static string LoadData(string fileName)
         {
             string log = "";
             try
             {
-                log = File.ReadAllText(fileName);
+                log = File.ReadAllText(fileName + ".txt");
             }
             catch (Exception)
             {
-                Console.WriteLine("ERROR: LoadData");
+                return "";
             }
             return log;
         }

@@ -102,7 +102,7 @@ namespace Servidor
                                 Console.WriteLine("    Cliente " + msg);
 
                                 // Guarda os dados no ficheiro
-                                FileHandler.SaveData(msg);
+                                FileHandler.SaveData(currentRoom.ToString(), msg);
 
                                 try
                                 {
@@ -140,72 +140,69 @@ namespace Servidor
                         } break;
                     case ProtocolSICmdType.USER_OPTION_1:
                         {
-                            string log = FileHandler.LoadData();
+                            string log = FileHandler.LoadData(currentRoom.ToString());
+                            
+                            // Variavel auxiliar
+                            string stringChunk = "";
 
-                            if (log.Length > 0)
+                            // Tamanho da resposta
+                            int stringLenght = log.Length;
+
+                            for (int i = 0; i < log.Length; i = i + CHUNKSIZE)
                             {
-                                // Variavel auxiliar
-                                string stringChunk = "";
-
-                                // Tamanho da resposta
-                                int stringLenght = log.Length;
-
-                                for (int i = 0; i < log.Length; i = i + CHUNKSIZE)
+                                if (CHUNKSIZE > stringLenght)
                                 {
-                                    if (CHUNKSIZE > stringLenght)
-                                    {
-                                        stringChunk = log.Substring(i);
-                                    }
-                                    else
-                                    {
-                                        stringLenght = stringLenght - CHUNKSIZE;
-                                        stringChunk = log.Substring(i, CHUNKSIZE);
-                                    }
-
-                                    // Converte a mensagem a enviar para bytes
-                                    byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(stringChunk) + " " + stringChunk);
-
-                                    byte[] msgCifrada;
-
-                                    // Cifra a mensagem
-                                    using (MemoryStream ms = new MemoryStream())
-                                    {
-                                        using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                                        {
-                                            cs.Write(messageBytes, 0, messageBytes.Length);
-                                        }
-                                        // Guarda a mensagem cifrada
-                                        msgCifrada = ms.ToArray();
-                                    }
-
-                                    Thread.Sleep(100);
-
-                                    try
-                                    {
-                                        // Envia a mensagem
-                                        byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
-                                        networkStream.Write(packet, 0, packet.Length);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine("Erro: " + ex);
-                                        return;
-                                    }
-
+                                    stringChunk = log.Substring(i);
                                 }
+                                else
+                                {
+                                    stringLenght = stringLenght - CHUNKSIZE;
+                                    stringChunk = log.Substring(i, CHUNKSIZE);
+                                }
+
+                                // Converte a mensagem a enviar para bytes
+                                byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(stringChunk) + " " + stringChunk);
+
+                                byte[] msgCifrada;
+
+                                // Cifra a mensagem
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                                    {
+                                        cs.Write(messageBytes, 0, messageBytes.Length);
+                                    }
+                                    // Guarda a mensagem cifrada
+                                    msgCifrada = ms.ToArray();
+                                }
+
                                 Thread.Sleep(100);
 
                                 try
                                 {
-                                    // Envia EOF
-                                    byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
-                                    networkStream.Write(eof, 0, eof.Length);
+                                    // Envia a mensagem
+                                    byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
+                                    networkStream.Write(packet, 0, packet.Length);
                                 }
                                 catch (Exception ex)
                                 {
                                     Console.WriteLine("Erro: " + ex);
                                     return;
                                 }
+
+                            }
+                            Thread.Sleep(100);
+
+                            try
+                            {
+                                // Envia EOF
+                                byte[] eof = protocolSI.Make(ProtocolSICmdType.EOF);
+                                networkStream.Write(eof, 0, eof.Length);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erro: " + ex);
+                                return;
                             }
 
                         } break;
