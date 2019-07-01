@@ -385,15 +385,8 @@ namespace Servidor
                                 return;
                             }
 
-                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(msgBytes);
-
-                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                            // Guarda a mensagem decifrada
-                            string sala = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            // Decifra e guarda sala
+                            string sala = Decifra(msgBytes);             
 
                             string hash = sala.Substring(0, sala.IndexOf(" "));
                             sala = sala.Substring(sala.IndexOf(" ") + 1);
