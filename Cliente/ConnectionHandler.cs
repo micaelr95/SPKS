@@ -25,7 +25,7 @@ namespace Cliente
 
         public static List<string> msgs = new List<string>();
         public static string player1Name;
-        public static string player2Name;
+        public static string player2Name = "Waiting...";
         public static int player1Points;
         public static int player2Points;
         public static string gameState;

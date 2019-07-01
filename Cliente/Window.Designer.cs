@@ -280,9 +280,9 @@
             this.labelPlayer2Ponto.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelPlayer2Ponto.Location = new System.Drawing.Point(404, 416);
             this.labelPlayer2Ponto.Name = "labelPlayer2Ponto";
-            this.labelPlayer2Ponto.Size = new System.Drawing.Size(48, 42);
+            this.labelPlayer2Ponto.Size = new System.Drawing.Size(40, 42);
             this.labelPlayer2Ponto.TabIndex = 46;
-            this.labelPlayer2Ponto.Text = "O";
+            this.labelPlayer2Ponto.Text = "0";
             // 
             // labelPlayer1Ponto
             // 
@@ -290,17 +290,17 @@
             this.labelPlayer1Ponto.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelPlayer1Ponto.Location = new System.Drawing.Point(404, 371);
             this.labelPlayer1Ponto.Name = "labelPlayer1Ponto";
-            this.labelPlayer1Ponto.Size = new System.Drawing.Size(48, 42);
+            this.labelPlayer1Ponto.Size = new System.Drawing.Size(40, 42);
             this.labelPlayer1Ponto.TabIndex = 41;
-            this.labelPlayer1Ponto.Text = "O";
+            this.labelPlayer1Ponto.Text = "0";
             // 
             // labelPlayer2Name
             // 
             this.labelPlayer2Name.AutoSize = true;
             this.labelPlayer2Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer2Name.Location = new System.Drawing.Point(235, 416);
+            this.labelPlayer2Name.Location = new System.Drawing.Point(6, 416);
             this.labelPlayer2Name.Name = "labelPlayer2Name";
-            this.labelPlayer2Name.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.labelPlayer2Name.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelPlayer2Name.Size = new System.Drawing.Size(163, 42);
             this.labelPlayer2Name.TabIndex = 40;
             this.labelPlayer2Name.Text = "Player 2";
@@ -309,9 +309,9 @@
             // 
             this.labelPlayer1Name.AutoSize = true;
             this.labelPlayer1Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelPlayer1Name.Location = new System.Drawing.Point(235, 371);
+            this.labelPlayer1Name.Location = new System.Drawing.Point(6, 371);
             this.labelPlayer1Name.Name = "labelPlayer1Name";
-            this.labelPlayer1Name.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.labelPlayer1Name.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.labelPlayer1Name.Size = new System.Drawing.Size(163, 42);
             this.labelPlayer1Name.TabIndex = 39;
             this.labelPlayer1Name.Text = "Player 1";
