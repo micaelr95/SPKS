@@ -55,28 +55,13 @@ namespace Cliente
         {
             string credenciais = username + " " + password;
 
-            // Converte a mensagem a enviar para bytes
-            byte[] msgBytes = Encoding.UTF8.GetBytes(GeraHash(credenciais) + " " + credenciais);
+            byte[] msgCifrada = Cifra(credenciais);
 
-            byte[] msgCifrada;
-
-            // Cifra a mensagem
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                {
-                    cryptoStream.Write(msgBytes, 0, msgBytes.Length);
-                }
-                // Guarda a mensagem cifrada
-                msgCifrada = memoryStream.ToArray();
-            }
+            // Envia os dados para o servidor
+            Send(msgCifrada, ProtocolSICmdType.USER_OPTION_3);
 
             try
             {
-                // Envia os dados para o servidor
-                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
-                networkStream.Write(packet, 0, packet.Length);
-
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
                 int state = -1;
@@ -90,16 +75,8 @@ namespace Cliente
                     {
                         byte[] receivedData = protocolSI.GetData();
 
-                        // Cria o array para guardar a mensagem decifrada
-                        byte[] msgDecifradaBytes = new byte[receivedData.Length];
-
                         // Decifra a mensagem
-                        MemoryStream memoryStream = new MemoryStream(receivedData);
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                        // Guarda a mensagem decifrada
-                        msg = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                        msg = Decifra(receivedData);
 
                         networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                     }
@@ -143,10 +120,14 @@ namespace Cliente
             {
                 return false;
             }
-
             return false;
         }
 
+        /// <summary>
+        /// Envia a mensagem para o servidor
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="type"></param>
         public void Send(byte[] message, ProtocolSICmdType type = ProtocolSICmdType.DATA)
         {
             try
