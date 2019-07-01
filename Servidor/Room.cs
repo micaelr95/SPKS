@@ -80,11 +80,11 @@ namespace Servidor
         {
             if (GameState == State.Player1Turn && player1Play == player2Play)
             {
-                player2Pontos += 1;
+                player2Pontos += 0;
             }
             else if (GameState == State.Player2Turn && player1Play == player2Play)
             {
-                player1Pontos += 1;
+                player1Pontos += 0;
             }
             else if (GameState == State.Player1Turn && player1Play != player2Play)
             {

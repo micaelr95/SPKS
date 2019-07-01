@@ -359,6 +359,7 @@ namespace Servidor
                                     if (lastState != currentRoom.GameState)
                                     {
                                         string msg = currentRoom.Player1Pontos.ToString() + " " + currentRoom.Player2Pontos.ToString() + " " + currentRoom.GameState;
+                                        // BUG: Inserir breakpoint na linha de baixo para o jogo funcionar
                                         Send(Cifra(msg), ProtocolSICmdType.USER_OPTION_5);
                                         lastState = currentRoom.GameState;
                                         break;
