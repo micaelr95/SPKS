@@ -349,14 +349,13 @@ namespace Cliente
             string msgEnviar = roomName;
             byte[] msgCifrada = Cifra(msgEnviar);
 
+            // Envia os dados para o servidor
+            Send(msgCifrada, ProtocolSICmdType.USER_OPTION_6);
+
+            string msg = "";
+
             try
             {
-                // Envia os dados para o servidor
-                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
-                networkStream.Write(packet, 0, packet.Length);
-
-                string msg = "";
-
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
                 // Enquanto nao receber um ACK recebe o que o servidor envia
