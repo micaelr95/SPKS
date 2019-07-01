@@ -323,20 +323,14 @@ namespace Servidor
                                 return;
                             }
 
-                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(msgBytes);
-
-                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                            string jogada = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            // Decifra e guarda jogada
+                            string jogada = Decifra(msgBytes);
+            
                             string hash = jogada.Substring(0, jogada.IndexOf(" "));
                             jogada = jogada.Substring(jogada.IndexOf(" ") + 1);
 
                             if (Common.ValidacaoDados(jogada, hash))
                             {
-                                // Guarda a mensagem decifrada
                                 Console.WriteLine("    Cliente " + user.Username + " jogou: " + jogada);
 
                                 if (currentRoom.GetPlayer1Name() == user.Username)
