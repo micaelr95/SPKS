@@ -372,8 +372,11 @@
             this.Controls.Add(this.groupBoxJogo);
             this.Controls.Add(this.groupBoxChat);
             this.Controls.Add(this.groupBoxAutenticacao);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Window";
-            this.Text = "Form1";
+            this.Text = "SPKS";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Window_FormClosing);
             this.groupBoxChat.ResumeLayout(false);
             this.groupBoxChat.PerformLayout();
