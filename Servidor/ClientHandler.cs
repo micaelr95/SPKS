@@ -83,15 +83,7 @@ namespace Servidor
                                 return;
                             }
 
-                            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(msgBytes);
-
-                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                            // Guarda a mensagem decifrada
-                            string msgRecebida = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
+                            string msgRecebida = Decifra(msgBytes);
 
                             string hash = msgRecebida.Substring(0, msgRecebida.IndexOf(" "));
                             msgRecebida = msgRecebida.Substring(msgRecebida.IndexOf(" ") + 1);
@@ -122,7 +114,8 @@ namespace Servidor
                             }
 
 
-                        } break;
+                        }
+                        break;
                     // Se for para fechar a comunicacao
                     case ProtocolSICmdType.EOT:
                         {
@@ -542,6 +535,19 @@ namespace Servidor
             client.Close();
 
             Console.WriteLine("O Cliente {0} desconnectou-se", clientId);
+        }
+
+        private string Decifra(byte[] msgBytes)
+        {
+            byte[] msgDecifradaBytes = new byte[msgBytes.Length];
+
+            MemoryStream memoryStream = new MemoryStream(msgBytes);
+
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
+            int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
+
+            // Guarda a mensagem decifrada
+            return Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
         }
 
         private void JuntaSala(Room room)
