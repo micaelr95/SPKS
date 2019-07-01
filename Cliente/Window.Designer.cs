@@ -145,7 +145,7 @@
             this.textBoxSala.Location = new System.Drawing.Point(70, 46);
             this.textBoxSala.Name = "textBoxSala";
             this.textBoxSala.Size = new System.Drawing.Size(168, 20);
-            this.textBoxSala.TabIndex = 35;
+            this.textBoxSala.TabIndex = 2;
             // 
             // label3
             // 
@@ -161,7 +161,7 @@
             this.buttonEntrar.Location = new System.Drawing.Point(7, 124);
             this.buttonEntrar.Name = "buttonEntrar";
             this.buttonEntrar.Size = new System.Drawing.Size(231, 25);
-            this.buttonEntrar.TabIndex = 4;
+            this.buttonEntrar.TabIndex = 5;
             this.buttonEntrar.Text = "Autenticar";
             this.buttonEntrar.UseVisualStyleBackColor = true;
             this.buttonEntrar.Click += new System.EventHandler(this.buttonEntrar_Click);
@@ -171,7 +171,7 @@
             this.textBoxNome.Location = new System.Drawing.Point(70, 72);
             this.textBoxNome.Name = "textBoxNome";
             this.textBoxNome.Size = new System.Drawing.Size(168, 20);
-            this.textBoxNome.TabIndex = 2;
+            this.textBoxNome.TabIndex = 3;
             // 
             // label4
             // 
@@ -196,7 +196,7 @@
             this.textBoxPassword.Location = new System.Drawing.Point(70, 98);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.Size = new System.Drawing.Size(168, 20);
-            this.textBoxPassword.TabIndex = 3;
+            this.textBoxPassword.TabIndex = 4;
             this.textBoxPassword.UseSystemPasswordChar = true;
             // 
             // textBoxIP
