@@ -202,6 +202,7 @@ namespace Cliente
         {
             string msg = "";
 
+            // Faz o pedido do log do chat
             try
             {
                 // Envia uma mensagem do tipo USER_OPTION_1
@@ -227,17 +228,9 @@ namespace Cliente
                         // Recebe a mensagem do servidor
                         byte[] msgBytes = protocolSI.GetData();
 
-                        // Cria o array para guardar a mensagem decifrada
-                        byte[] msgDecifradaBytes = new byte[msgBytes.Length];
-
-                        // Decifra a mensagem
-                        MemoryStream memoryStream = new MemoryStream(msgBytes);
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                        int bytesLidos = cryptoStream.Read(msgDecifradaBytes, 0, msgDecifradaBytes.Length);
-
-                        // Guarda a mensagem decifrada
-                        string chunk = Encoding.UTF8.GetString(msgDecifradaBytes, 0, bytesLidos);
-
+                        // Decifra e guarda a mensagem decifrada
+                        string chunk = Decifra(msgBytes);
+                        
                         string hash = chunk.Substring(0, chunk.IndexOf(" "));
                         chunk = chunk.Substring(chunk.IndexOf(" ") + 1);
 
