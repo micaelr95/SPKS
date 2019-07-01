@@ -227,15 +227,7 @@ namespace Servidor
                             // Recebe os dados do cliente
                             byte[] credenciaisBytes = protocolSI.GetData();
 
-                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
-
-                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
-
-                            // Guarda as credenciais decifradas
-                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+                            string credenciais = Decifra(credenciaisBytes);
 
                             string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
                             credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
@@ -267,40 +259,11 @@ namespace Servidor
                                     user = utilizador;
                                     state = 0;
                                 }
+                                
 
-                                string msg = Common.GeraHash(state.ToString()) + " " + state.ToString();
+                                byte[] msgCifrada = Cifra(state.ToString());
 
-                                // Converte a mensagem a enviar para bytes
-                                byte[] messageBytes = Encoding.UTF8.GetBytes(msg);
-
-                                byte[] msgCifrada;
-
-                                // Cifra a mensagem
-                                using (MemoryStream ms = new MemoryStream())
-                                {
-                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                                    {
-                                        cs.Write(messageBytes, 0, messageBytes.Length);
-                                    }
-                                    // Guarda a mensagem cifrada
-                                    msgCifrada = ms.ToArray();
-                                }
-
-                                try
-                                {
-                                    // Envia a mensagem
-                                    byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, msgCifrada);
-                                    networkStream.Write(packet, 0, packet.Length);
-
-                                    // Envia o ACK para o cliente
-                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                    networkStream.Write(ack, 0, ack.Length);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("Erro: " + ex);
-                                    return;
-                                }
+                                Send(msgCifrada, ProtocolSICmdType.USER_OPTION_3);
                             }
                             else
                             {
