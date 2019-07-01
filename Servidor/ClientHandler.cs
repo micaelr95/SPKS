@@ -138,6 +138,7 @@ namespace Servidor
                                 return;
                             }
                         } break;
+                    // Envia log do chat
                     case ProtocolSICmdType.USER_OPTION_1:
                         {
                             string log = FileHandler.LoadData(currentRoom.ToString());
@@ -265,6 +266,7 @@ namespace Servidor
                             }
 
                         } break;
+                    // Login
                     case ProtocolSICmdType.USER_OPTION_3:
                         {
                             // Recebe os dados do cliente
@@ -284,9 +286,6 @@ namespace Servidor
                             credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
                             string username = credenciais.Substring(0, credenciais.IndexOf(" "));
                             string password = credenciais.Substring(credenciais.IndexOf(" ") + 1);
-
-                            Console.WriteLine(username);
-                            Console.WriteLine(password);
 
                             if (Common.ValidacaoDados(username + " " + password, hash))
                             {
@@ -398,6 +397,7 @@ namespace Servidor
                             }
                         }
                         break;
+                    // Jogo
                     case ProtocolSICmdType.USER_OPTION_5:
                         {
                             byte[] msgBytes = null;
@@ -498,60 +498,31 @@ namespace Servidor
                                 // Verifica existem salas
                                 if (Game.rooms.Count == 0)
                                 {
-                                    // Cria a sala
-                                    currentRoom = new Room(sala, user);
-                                    Game.rooms.Add(currentRoom);
-
-                                    // Envia os dados da sala para o jogador
-                                    string dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GameState;
-
-                                    // Cifra a mensagem
-                                    byte[] msgCifrada = Cifra(dadosSala);
-
-                                    Send(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
-
-                                    while (true)
-                                    {
-                                        if (currentRoom.GetPlayer2Name() != null)
-                                        {
-                                            lastState = currentRoom.GameState;
-
-                                            // Envia os dados da sala para o jogador
-                                            dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GetPlayer2Name() + " " + currentRoom.GameState;
-
-                                            // Cifra a mensagem
-                                            byte[] msg = Cifra(dadosSala);
-
-                                            Send(ProtocolSICmdType.USER_OPTION_7, msg);
-
-                                            break;
-                                        }
-                                    }
+                                    CriaSala(sala);
                                 }
                                 else
                                 {
-                                    foreach (Room room in Game.rooms)
+                                    try
                                     {
-                                        if (room.ToString() == sala)
+                                        foreach (Room room in Game.rooms)
                                         {
-                                            currentRoom = room;
-                                            room.AddPlayer2(user);
-                                            lastState = currentRoom.GameState;
-
-                                            // Envia os dados da sala para o jogador
-                                            string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GameState;
-
-                                            // Cifra a mensagem
-                                            byte[] msgCifrada = Cifra(dadosSala);
-
-                                            Send(ProtocolSICmdType.USER_OPTION_7, msgCifrada);
+                                            if (room.ToString() == sala)
+                                            {
+                                                JuntaSala(room);
+                                            }
+                                            else if (room == Game.rooms.Last() && room.ToString() == sala)
+                                            {
+                                                JuntaSala(room);
+                                                break;
+                                            }
+                                            else if (room == Game.rooms.Last())
+                                            {
+                                                CriaSala(sala);
+                                            }
                                         }
-                                        else
-                                        {
-                                            // TODO
-                                            Room newRoom = new Room(sala, user);
-                                            Game.rooms.Add(newRoom);
-                                        }
+                                    }
+                                    catch (Exception)
+                                    {
                                     }
                                 }
                             }
@@ -571,6 +542,54 @@ namespace Servidor
             client.Close();
 
             Console.WriteLine("O Cliente {0} desconnectou-se", clientId);
+        }
+
+        private void JuntaSala(Room room)
+        {
+            currentRoom = room;
+            room.AddPlayer2(user);
+            lastState = currentRoom.GameState;
+
+            // Envia os dados da sala para o jogador
+            string dadosSala = room.GetPlayer1Name() + " " + room.GetPlayer2Name() + " " + room.GameState;
+
+            // Cifra a mensagem
+            byte[] msgCifrada = Cifra(dadosSala);
+
+            Send(ProtocolSICmdType.USER_OPTION_7, msgCifrada);
+        }
+
+        private void CriaSala(string sala)
+        {
+            // Cria a sala
+            currentRoom = new Room(sala, user);
+            Game.rooms.Add(currentRoom);
+
+            // Envia os dados da sala para o jogador
+            string dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GameState;
+
+            // Cifra a mensagem
+            byte[] msgCifrada = Cifra(dadosSala);
+
+            Send(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
+
+            while (true)
+            {
+                if (currentRoom.GetPlayer2Name() != null)
+                {
+                    lastState = currentRoom.GameState;
+
+                    // Envia os dados da sala para o jogador
+                    dadosSala = currentRoom.GetPlayer1Name() + " " + currentRoom.GetPlayer2Name() + " " + currentRoom.GameState;
+
+                    // Cifra a mensagem
+                    byte[] msg = Cifra(dadosSala);
+
+                    Send(ProtocolSICmdType.USER_OPTION_7, msg);
+
+                    break;
+                }
+            }
         }
 
         /// <summary>
