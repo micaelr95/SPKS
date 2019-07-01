@@ -286,15 +286,8 @@ namespace Servidor
                                 return;
                             }
 
-                            byte[] credenciaisDecifradaBytes = new byte[credenciaisBytes.Length];
-
-                            MemoryStream memoryStream = new MemoryStream(credenciaisBytes);
-
-                            CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read);
-                            int bytesLidos = cryptoStream.Read(credenciaisDecifradaBytes, 0, credenciaisDecifradaBytes.Length);
-
-                            // Guarda as credenciais decifradas
-                            string credenciais = Encoding.UTF8.GetString(credenciaisDecifradaBytes, 0, bytesLidos);
+                            // Decifra e guarda as credenciais
+                            string credenciais = Decifra(credenciaisBytes);
 
                             string hash = credenciais.Substring(0, credenciais.IndexOf(" "));
                             credenciais = credenciais.Substring(credenciais.IndexOf(" ") + 1);
