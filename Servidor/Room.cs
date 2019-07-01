@@ -96,6 +96,7 @@ namespace Servidor
             }
         }
 
+        // Loop principal do jogo
         private void Loop()
         {
             while (true)

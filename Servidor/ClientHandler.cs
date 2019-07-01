@@ -260,7 +260,6 @@ namespace Servidor
                                     state = 0;
                                 }
                                 
-
                                 byte[] msgCifrada = Cifra(state.ToString());
 
                                 Send(msgCifrada, ProtocolSICmdType.USER_OPTION_3);

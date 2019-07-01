@@ -30,16 +30,21 @@ namespace Cliente
         public static int player2Points;
         public static string gameState;
 
+        // Conecta o servidor
         public void ConnectToServer(string ip)
         {
             try
             {
+                // Incia o TCP Cliente
                 tcpClient = new TcpClient();
 
+                // Conecta ao servidor
                 tcpClient.Connect(ip, PORT);
 
+                // Recebe a stream de dados
                 networkStream = tcpClient.GetStream();
 
+                // Cria protoclo SI
                 protocolSI = new ProtocolSI();
 
                 // Envia a chave publica para o servidor
@@ -141,7 +146,8 @@ namespace Cliente
                 return;
             }
         }
-
+        
+        // Troca as chaves
         public void ExchangeKeys()
         {
             // Guarda as chaves (Assimetrica)
@@ -152,6 +158,7 @@ namespace Cliente
 
             try
             {
+                // Envia a chave publica para o servidor
                 byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, GeraHash(publicKey) + " " + publicKey);
                 networkStream.Write(packet, 0, packet.Length);
             }
@@ -160,6 +167,7 @@ namespace Cliente
                 return;
             }
 
+            // Cria o array para guardar os dados recebidos
             byte[] receivedData = new byte[1024];
 
             try
@@ -193,11 +201,13 @@ namespace Cliente
             aes.IV = Convert.FromBase64String(iv);
         }
 
+        // Cria o thread para receber os dados do chat e do jogo
         public void ReceiveData()
         {
             new Thread(ReceiveDataThread).Start();
         }
 
+        // Recebe os dados do chat e do jogo
         private void ReceiveDataThread()
         {
             string msg = "";
@@ -205,7 +215,7 @@ namespace Cliente
             // Faz o pedido do log do chat
             try
             {
-                // Envia uma mensagem do tipo USER_OPTION_1
+                // Envia uma mensagem do tipo USER_OPTION_1 (pedido do log do chat)
                 byte[] opt1 = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1);
                 networkStream.Write(opt1, 0, opt1.Length);
             }
@@ -223,6 +233,7 @@ namespace Cliente
                     {
                         break;
                     }
+                    // Recebe os dados do chat
                     else if (protocolSI.GetCmdType() == ProtocolSICmdType.DATA)
                     {
                         // Recebe a mensagem do servidor
@@ -239,6 +250,7 @@ namespace Cliente
                             msg += chunk;
                         }
                     }
+                    // Recebe os dados do jogo
                     else if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_5)
                     {
                         // Recebe a mensagem do servidor
@@ -293,6 +305,7 @@ namespace Cliente
             Window.timerEnable = false;
         }
 
+        // Termina a ligacao com o servidor
         public void CloseConnection()
         {
             try
@@ -327,6 +340,7 @@ namespace Cliente
             return hash;
         }
 
+        // Gera a hash e confirma se coincide com a hash criada no servidor
         public bool ValidacaoDados(string Dados, string HashDados)
         {
             
@@ -337,12 +351,14 @@ namespace Cliente
             return true;
         }
 
+        // Cria a thread para inserir o utilizador na sala
         public void JoinRoom(string roomName)
         {
             Thread thread = new Thread(() => JoinRoomThread(roomName));
             thread.Start();
         }
 
+        // Insere o utilizador na sala
         public void JoinRoomThread(string roomName)
         {
             // Mensagem a enviar
@@ -363,14 +379,19 @@ namespace Cliente
                 {
                     if (protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_6)
                     {
+                        // Receb os dados do servidor
                         byte[] receivedData = protocolSI.GetData();
+
+                        // Decifra os dados recebidos do servidor
                         msg = Decifra(receivedData);
                         
+                        // Divide a mensagem por hash, mensagem, nome e estado
                         string hash = msg.Substring(0, msg.IndexOf(" "));
                         msg = msg.Substring(msg.IndexOf(" ") + 1);
                         string nome = msg.Substring(0, msg.IndexOf(" "));
                         string state = msg.Substring(msg.IndexOf(" ") + 1);
 
+                        // Valida se as hashes coincidem
                         if (ValidacaoDados(msg, hash))
                         {
                             player1Name = nome;
@@ -392,13 +413,17 @@ namespace Cliente
                         // Recebe a mensagem do servidor
                         byte[] msgBytes = protocolSI.GetData();
 
+                        // Decifra os dados recebidos do servidor
                         msg = Decifra(msgBytes);
 
+                        // Divide a mensagem por hash e mensagem
                         string hash = msg.Substring(0, msg.IndexOf(" "));
                         msg = msg.Substring(msg.IndexOf(" ") + 1);
 
+                        // Valida se as hashes coincidem
                         if (ValidacaoDados(msg, hash))
                         {
+                            // Divide os dados por nomes dos jogadores, mensagens e estado da sala
                             string player1 = msg.Substring(0, msg.IndexOf(" "));
                             msg = msg.Substring(msg.IndexOf(" ") + 1);
                             string player2 = msg.Substring(0, msg.IndexOf(" "));
@@ -419,7 +444,6 @@ namespace Cliente
                         }
                         break;
                     }
-
                     networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                 }
             }

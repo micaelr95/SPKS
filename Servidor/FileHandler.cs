@@ -9,6 +9,7 @@ namespace Servidor
 {
     class FileHandler
     {
+        // Guarda mensagens do chat num ficheiro
         public static void SaveData(string fileName, string msg)
         {
             using (StreamWriter streamWriter = File.AppendText(fileName + ".txt"))
@@ -17,6 +18,7 @@ namespace Servidor
             }
         }
 
+        // Le o log das mensagens do chat
         public static string LoadData(string fileName)
         {
             string log = "";
