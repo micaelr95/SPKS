@@ -173,31 +173,37 @@ namespace Cliente
 
         private void buttonCantoInferiorDireito_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(2, 3);
         }
 
         private void buttonCantoSuperiorEsquerdo_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(1, 1);
         }
 
         private void buttonCentroCima_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(1, 2);     
         }
 
         private void buttonCantoSuperiorDireito_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(1, 3);
         }
 
         private void buttonCentroBaixo_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(2, 2);
         }
 
         private void buttonCantoInferiorEsquerdo_Click(object sender, EventArgs e)
         {
+            groupBoxJogo.Enabled = false;
             connectionHandler.SendPlay(2, 1);
         }
     }

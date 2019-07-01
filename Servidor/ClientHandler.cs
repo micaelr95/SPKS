@@ -455,6 +455,7 @@ namespace Servidor
                                     {
                                         string msg = currentRoom.Player1Pontos.ToString() + " " + currentRoom.Player2Pontos.ToString() + " " + currentRoom.GameState;
                                         Send(ProtocolSICmdType.USER_OPTION_5, Cifra(msg));
+                                        lastState = currentRoom.GameState;
                                         break;
                                     }
                                 }

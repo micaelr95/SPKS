@@ -81,22 +81,18 @@ namespace Servidor
             if (GameState == State.Player1Turn && player1Play == player2Play)
             {
                 player2Pontos += 1;
-                gameState = State.Player2Turn;
             }
             else if (GameState == State.Player2Turn && player1Play == player2Play)
             {
                 player1Pontos += 1;
-                gameState = State.Player1Turn;
             }
             else if (GameState == State.Player1Turn && player1Play != player2Play)
             {
                 player1Pontos += 1;
-                gameState = State.Player2Turn;
             }
             else if (GameState == State.Player2Turn && player1Play != player2Play)
             {
                 player2Pontos += 1;
-                gameState = State.Player1Turn;
             }
         }
 
@@ -109,13 +105,9 @@ namespace Servidor
                     VerificaPonto();
                     player1Play = "";
                     player2Play = "";
+                    ChangeTurn();
                 }
             }
-        }
-
-        public void IniciaJogo()
-        {
-            
         }
     }
 }
