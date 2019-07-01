@@ -68,7 +68,7 @@ namespace Servidor
                 // Verifica o tipo de mensagem
                 switch (protocolSI.GetCmdType())
                 {
-                    // Se for uma mensagem
+                    // Se for uma mensagem do chat
                     case ProtocolSICmdType.DATA:
                         {
                             byte[] msgBytes = null;
@@ -154,36 +154,12 @@ namespace Servidor
                                     stringChunk = log.Substring(i, CHUNKSIZE);
                                 }
 
-                                // Converte a mensagem a enviar para bytes
-                                byte[] messageBytes = Encoding.UTF8.GetBytes(Common.GeraHash(stringChunk) + " " + stringChunk);
-
-                                byte[] msgCifrada;
-
                                 // Cifra a mensagem
-                                using (MemoryStream ms = new MemoryStream())
-                                {
-                                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                                    {
-                                        cs.Write(messageBytes, 0, messageBytes.Length);
-                                    }
-                                    // Guarda a mensagem cifrada
-                                    msgCifrada = ms.ToArray();
-                                }
-
+                                byte[] msgCifrada = Cifra(stringChunk);
+                                
                                 Thread.Sleep(100);
 
-                                try
-                                {
-                                    // Envia a mensagem
-                                    byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, msgCifrada);
-                                    networkStream.Write(packet, 0, packet.Length);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("Erro: " + ex);
-                                    return;
-                                }
-
+                                Send(msgCifrada, ProtocolSICmdType.DATA);
                             }
                             Thread.Sleep(100);
 
@@ -447,7 +423,7 @@ namespace Servidor
                                     if (lastState != currentRoom.GameState)
                                     {
                                         string msg = currentRoom.Player1Pontos.ToString() + " " + currentRoom.Player2Pontos.ToString() + " " + currentRoom.GameState;
-                                        Send(ProtocolSICmdType.USER_OPTION_5, Cifra(msg));
+                                        Send(Cifra(msg), ProtocolSICmdType.USER_OPTION_5);
                                         lastState = currentRoom.GameState;
                                         break;
                                     }
@@ -562,7 +538,7 @@ namespace Servidor
             // Cifra a mensagem
             byte[] msgCifrada = Cifra(dadosSala);
 
-            Send(ProtocolSICmdType.USER_OPTION_7, msgCifrada);
+            Send(msgCifrada, ProtocolSICmdType.USER_OPTION_7);
         }
 
         private void CriaSala(string sala)
@@ -577,7 +553,7 @@ namespace Servidor
             // Cifra a mensagem
             byte[] msgCifrada = Cifra(dadosSala);
 
-            Send(ProtocolSICmdType.USER_OPTION_6, msgCifrada);
+            Send(msgCifrada, ProtocolSICmdType.USER_OPTION_6);
 
             while (true)
             {
@@ -591,7 +567,7 @@ namespace Servidor
                     // Cifra a mensagem
                     byte[] msg = Cifra(dadosSala);
 
-                    Send(ProtocolSICmdType.USER_OPTION_7, msg);
+                    Send(msg, ProtocolSICmdType.USER_OPTION_7);
 
                     break;
                 }
@@ -629,7 +605,7 @@ namespace Servidor
         /// </summary>
         /// <param name="type"></param>
         /// <param name="mensagem"></param>
-        private void Send(ProtocolSICmdType type, byte[] mensagem)
+        private void Send(byte[] mensagem, ProtocolSICmdType type)
         {
             try
             {
