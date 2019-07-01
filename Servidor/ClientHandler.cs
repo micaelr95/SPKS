@@ -213,21 +213,7 @@ namespace Servidor
                                 // Encripta a key e o iv
                                 byte[] keyEnc = rsa.Encrypt(keys, true);
 
-                                try
-                                {
-                                    // Envia a key
-                                    byte[] keyPacket = protocolSI.Make(ProtocolSICmdType.USER_OPTION_2, keyEnc);
-                                    networkStream.Write(keyPacket, 0, keyPacket.Length);
-
-                                    // Envia o ACK para o cliente
-                                    ack = protocolSI.Make(ProtocolSICmdType.ACK);
-                                    networkStream.Write(ack, 0, ack.Length);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine("Erro: " + ex);
-                                    return;
-                                }
+                                Send(keyEnc, ProtocolSICmdType.USER_OPTION_2);
                             }
                             else
                             {
